@@ -57,7 +57,6 @@ export const api = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify(data)
     });
     return response.json();
@@ -70,7 +69,6 @@ export const api = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      credentials: 'include',
       body: JSON.stringify(data)
     });
     return response.json();
