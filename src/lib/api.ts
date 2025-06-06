@@ -1,5 +1,5 @@
-// Use local API routes
-const API_BASE_URL = '/api';
+// Use the environment variable for API calls
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
 
 // Define interface types for API requests and responses
 export interface SignupRequest {
@@ -58,6 +58,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify(data)
     });
     return response.json();
@@ -70,6 +71,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify(data)
     });
     return response.json();
