@@ -11,3 +11,8 @@ export interface CoachResponse {
   data: FinancialAdvice[];
   message?: string;
 }
+
+export interface Advice {
+  content: string;
+  timestamp: string;
+}

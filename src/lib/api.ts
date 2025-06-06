@@ -43,6 +43,11 @@ export interface Transaction {
   updated_at: string;
 }
 
+export interface Advice {
+  content: string;
+  timestamp: string;
+}
+
 export const api = {
   // Auth
   signup: async (data: SignupRequest): Promise<AuthResponse | ErrorResponse> => {
@@ -225,5 +230,11 @@ export const api = {
       }
       throw new Error('Failed to delete transaction');
     }
+  },
+
+  getFinancialAdvice: async (token: string): Promise<Response> => {
+    return fetch(`${API_BASE_URL}/coach/advice/`, {
+      headers: { 'Authorization': `Token ${token}` }
+    });
   }
 };
