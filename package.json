@@ -6,24 +6,28 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "next lint"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "axios": "^0.21.1",
+    "axios": "^1.6.7",
     "chart.js": "^4.4.9",
-    "next": "latest",
-    "react": "latest",
+    "next": "14.1.0",
+    "react": "^18.2.0",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "latest"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/node": "22.15.30",
-    "@types/react": "19.1.6",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^7.32.0",
-    "eslint-config-next": "latest",
-    "postcss": "^8.5.4",
-    "tailwindcss": "^3.4.1"
+    "@types/node": "^20.11.19",
+    "@types/react": "^18.2.57",
+    "@types/react-dom": "^18.2.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
   }
 }
