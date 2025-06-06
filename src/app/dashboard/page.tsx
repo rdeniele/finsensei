@@ -67,7 +67,7 @@ export default function DashboardPage() {
     }
 
     fetchData();
-  }, [token, isAuthenticated, router]);
+  }, [token, isAuthenticated, router, fetchData]);
 
   const handleGetAdvice = async () => {
     try {
@@ -80,10 +80,13 @@ export default function DashboardPage() {
         currency: user?.currency || 'USD'
       };
 
-      return await fetchFinancialAdvice(financialData);
+      const advice = await fetchFinancialAdvice(financialData);
+      setAdvice(advice);
+      setLoading(false);
     } catch (error) {
       console.error('Error getting financial advice:', error);
-      throw error;
+      setError('Failed to get financial advice');
+      setLoading(false);
     }
   };
 

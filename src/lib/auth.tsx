@@ -2,19 +2,13 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  currency: string; // e.g., 'USD', 'EUR', 'GBP', etc.
-}
+import { UserData, AuthResponse } from '@/types/user';
 
 interface AuthContextType {
-  user: User | null;
+  user: UserData | null;
   token: string | null;
   isAuthenticated: boolean;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: UserData) => void;
   logout: () => void;
   updateCurrency: (currency: string) => void;
 }
@@ -27,7 +21,7 @@ const PUBLIC_PATHS = ['/auth/signin', '/auth/signup'];
 const DEFAULT_CURRENCY = 'USD';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -40,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      const parsedUser = JSON.parse(storedUser);
+      const parsedUser = JSON.parse(storedUser) as UserData;
       // Ensure user has a currency set
       if (!parsedUser.currency) {
         parsedUser.currency = DEFAULT_CURRENCY;
@@ -64,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token, pathname, isLoading, router]);
 
-  const login = (newToken: string, newUser: User) => {
+  const login = (newToken: string, newUser: UserData) => {
     // Ensure user has a currency set
     if (!newUser.currency) {
       newUser.currency = DEFAULT_CURRENCY;
