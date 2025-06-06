@@ -8,6 +8,14 @@ const nextConfig = {
   images: {
     domains: ['placehold.co'],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://finsenseibackend-production.up.railway.app/api/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
