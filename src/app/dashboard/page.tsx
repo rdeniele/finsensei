@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import FinancialMetrics from '@/components/dashboard/FinancialMetrics';
@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [netBalance, setNetBalance] = useState(0);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [accountsData, transactionsData] = await Promise.all([
         api.getAccounts(token!),
@@ -41,7 +41,7 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
 
   // Calculate totals whenever accounts or transactions change
   useEffect(() => {
@@ -71,6 +71,7 @@ export default function DashboardPage() {
 
   const handleGetAdvice = async () => {
     try {
+      setLoading(true);
       const financialData = {
         accounts,
         transactions,
@@ -82,10 +83,10 @@ export default function DashboardPage() {
 
       const advice = await fetchFinancialAdvice(financialData);
       setAdvice(advice);
-      setLoading(false);
     } catch (error) {
       console.error('Error getting financial advice:', error);
       setError('Failed to get financial advice');
+    } finally {
       setLoading(false);
     }
   };
