@@ -5,7 +5,7 @@ const nextConfig = {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   },
   images: {
-    domains: ['example.com'], // Replace with actual domains if needed
+    domains: ['placehold.co'],
   },
   async headers() {
     return [
