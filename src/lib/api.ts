@@ -52,7 +52,7 @@ export interface Advice {
 export const api = {
   // Auth
   signup: async (data: SignupRequest): Promise<AuthResponse | ErrorResponse> => {
-    const response = await fetch(`${API_BASE_URL}/api/auth/signup/`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signup/`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export const api = {
   },
 
   signin: async (data: SigninRequest): Promise<AuthResponse | ErrorResponse> => {
-    const response = await fetch(`${API_BASE_URL}/api/auth/signin/`, {
+    const response = await fetch(`${API_BASE_URL}/auth/signin/`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
