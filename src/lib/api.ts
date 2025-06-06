@@ -1,5 +1,5 @@
-// Use relative URLs for API calls
-const API_BASE_URL = '/api';
+// Use the environment variable for API calls
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 // Define interface types for API requests and responses
 export interface SignupRequest {
@@ -52,7 +52,7 @@ export interface Advice {
 export const api = {
   // Auth
   signup: async (data: SignupRequest): Promise<AuthResponse | ErrorResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/signup/`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup/`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export const api = {
   },
 
   signin: async (data: SigninRequest): Promise<AuthResponse | ErrorResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/signin/`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signin/`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
