@@ -45,12 +45,12 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
   const userCurrency = user?.currency || 'USD';
 
   return (
-    <div className="bg-white rounded-lg shadow p-3">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-base font-semibold">Accounts</h2>
+        <h2 className="text-base font-semibold dark:text-white">Accounts</h2>
         <button
           onClick={() => setShowAddModal(true)}
-          className="text-xs text-blue-600 hover:text-blue-500"
+          className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
         >
           + Add Account
         </button>
@@ -61,17 +61,17 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
           <div
             key={account.id}
             onClick={handleAccountClick}
-            className="flex justify-between items-center p-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           >
             <div>
-              <h3 className="font-medium text-sm">{account.account_name}</h3>
-              <p className="text-xs text-gray-500">
+              <h3 className="font-medium text-sm dark:text-white">{account.account_name}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Last updated: {new Date(account.updated_at).toLocaleDateString()}
               </p>
             </div>
             <div className="text-right">
               <p className={`font-medium text-sm ${
-                parseFloat(account.balance) >= 0 ? 'text-green-600' : 'text-red-600'
+                parseFloat(account.balance) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {formatCurrency(parseFloat(account.balance), userCurrency)}
               </p>
@@ -83,7 +83,7 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
       {accounts.length > 2 && (
         <button
           onClick={handleAccountClick}
-          className="mt-2 text-xs text-blue-600 hover:text-blue-500 w-full text-center"
+          className="mt-2 text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 w-full text-center"
         >
           View All Accounts
         </button>

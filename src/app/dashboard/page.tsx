@@ -118,66 +118,80 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-6">
+        <div className="space-y-8">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold">Dashboard</h1>
+            <div>
+              <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back, {user?.name || 'User'}</p>
+            </div>
             <CoachButton accounts={accounts} transactions={transactions} />
           </div>
 
           {advice && <AdviceDisplay advice={advice} isLoading={loading} error={error} />}
 
-          <FinancialMetrics
-            income={totalIncome}
-            expenses={totalExpenses}
-            netBalance={netBalance}
-            currency={user?.currency || 'USD'}
-          />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+            <FinancialMetrics
+              income={totalIncome}
+              expenses={totalExpenses}
+              netBalance={netBalance}
+              currency={user?.currency || 'USD'}
+            />
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div>
-              <FinancialChart
-                labels={chartData.labels}
-                incomeData={chartData.incomeData}
-                expenseData={chartData.expenseData}
-              />
-              {/* Financial Insights Section */}
-              <div className="mt-6">
-                <h2 className="text-xl font-semibold mb-4">Financial Insights</h2>
-                <div className="bg-white rounded-lg shadow p-6">
-                  <ul className="space-y-2">
-                    <li>
-                      💡 {totalIncome > 0 ? `You saved ${((netBalance / totalIncome) * 100).toFixed(1)}% of your income overall.` : 'Add income to see your savings rate.'}
-                    </li>
-                    <li>
-                      ⚠️ {totalExpenses > 0 ? `Your expenses are ${((totalExpenses / (totalIncome || 1)) * 100).toFixed(1)}% of your income.` : 'No expenses recorded yet.'}
-                    </li>
-                    <li>
-                      📈 {netBalance >= 0 ? 'Your net balance is positive. Keep it up!' : 'Your net balance is negative. Review your expenses.'}
-                    </li>
-                  </ul>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-8">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold mb-6 dark:text-white">Financial Overview</h2>
+                <FinancialChart
+                  labels={chartData.labels}
+                  incomeData={chartData.incomeData}
+                  expenseData={chartData.expenseData}
+                />
+              </div>
+
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold mb-6 dark:text-white">Financial Insights</h2>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3 dark:text-gray-300">
+                    <span className="text-2xl">💡</span>
+                    <span>{totalIncome > 0 ? `You saved ${((netBalance / totalIncome) * 100).toFixed(1)}% of your income overall.` : 'Add income to see your savings rate.'}</span>
+                  </li>
+                  <li className="flex items-start space-x-3 dark:text-gray-300">
+                    <span className="text-2xl">⚠️</span>
+                    <span>{totalExpenses > 0 ? `Your expenses are ${((totalExpenses / (totalIncome || 1)) * 100).toFixed(1)}% of your income.` : 'No expenses recorded yet.'}</span>
+                  </li>
+                  <li className="flex items-start space-x-3 dark:text-gray-300">
+                    <span className="text-2xl">📈</span>
+                    <span>{netBalance >= 0 ? 'Your net balance is positive. Keep it up!' : 'Your net balance is negative. Review your expenses.'}</span>
+                  </li>
+                </ul>
               </div>
             </div>
-            <div className="space-y-6">
-              <MiniAccountList 
-                accounts={accounts} 
-                onAccountAdded={fetchData}
-              />
-              <MiniTransactionList 
-                transactions={transactions}
-                accounts={accounts}
-                onTransactionAdded={fetchData}
-              />
+
+            <div className="space-y-8">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <MiniAccountList 
+                  accounts={accounts} 
+                  onAccountAdded={fetchData}
+                />
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <MiniTransactionList 
+                  transactions={transactions}
+                  accounts={accounts}
+                  onTransactionAdded={fetchData}
+                />
+              </div>
             </div>
           </div>
         </div>

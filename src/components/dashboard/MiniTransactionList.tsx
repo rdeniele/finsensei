@@ -43,12 +43,12 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
   const userCurrency = user?.currency || 'USD';
 
   return (
-    <div className="bg-white rounded-lg shadow p-3">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-base font-semibold">Recent Transactions</h2>
+        <h2 className="text-base font-semibold dark:text-white">Recent Transactions</h2>
         <button
           onClick={() => setShowAddModal(true)}
-          className="text-xs text-blue-600 hover:text-blue-500"
+          className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
         >
           + Add Transaction
         </button>
@@ -59,22 +59,22 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
           <div
             key={transaction.id}
             onClick={handleTransactionClick}
-            className="flex justify-between items-center p-2 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
+            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
           >
             <div className="flex items-center space-x-2">
-              <span className="text-base">
+              <span className="text-base dark:text-white">
                 {getTransactionIcon(transaction.transaction_type)}
               </span>
               <div>
-                <h3 className="font-medium text-sm">{transaction.source}</h3>
-                <p className="text-xs text-gray-500">
+                <h3 className="font-medium text-sm dark:text-white">{transaction.source}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {transaction.date} • {transaction.account_name}
                 </p>
               </div>
             </div>
             <div className="text-right">
               <p className={`font-medium text-sm ${
-                transaction.transaction_type === 'income' ? 'text-green-600' : 'text-red-600'
+                transaction.transaction_type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {transaction.transaction_type === 'income' ? '+' : '-'}
                 {formatCurrency(parseFloat(transaction.amount), userCurrency)}
@@ -87,7 +87,7 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
       {transactions.length > 3 && (
         <button
           onClick={handleTransactionClick}
-          className="mt-2 text-xs text-blue-600 hover:text-blue-500 w-full text-center"
+          className="mt-2 text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 w-full text-center"
         >
           View All Transactions
         </button>

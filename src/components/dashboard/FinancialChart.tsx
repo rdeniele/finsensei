@@ -69,7 +69,7 @@ export default function FinancialChart({ labels, incomeData, expenseData }: Fina
   };
 
   return (
-    <div className="bg-white p-2 rounded-lg shadow-sm" style={{ height: 220 }}>
+    <div className="bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm" style={{ height: 220 }}>
       <Line options={options} data={data} />
     </div>
   );
