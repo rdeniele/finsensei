@@ -38,6 +38,7 @@ const CoachButton: React.FC<CoachButtonProps> = ({ accounts, transactions }) => 
       </button>
       {showModal && (
         <ChatModal
+          isOpen={showModal}
           onClose={() => setShowModal(false)}
           accounts={accounts}
           transactions={transactions}
