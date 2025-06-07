@@ -46,7 +46,7 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               type="text"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white"
               placeholder="Enter account name"
               required
               maxLength={100}
@@ -60,7 +60,7 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               step="0.01"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white"
               placeholder="Enter initial balance"
               required
             />
