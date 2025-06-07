@@ -71,9 +71,9 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
             </div>
             <div className="text-right">
               <p className={`font-medium text-sm ${
-                parseFloat(account.balance) >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                account.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
-                {formatCurrency(parseFloat(account.balance), userCurrency)}
+                {formatCurrency(account.balance, userCurrency)}
               </p>
             </div>
           </div>

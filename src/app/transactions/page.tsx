@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction, getAccounts } from '@/lib/db';
-import type { Transaction, Account } from '@/lib/supabase';
+import type { Transaction, Account } from '@/types/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 // Helper function to format currency

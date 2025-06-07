@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Account } from '@/lib/api';
+import { Account } from '../../types/supabase';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { createTransaction } from '@/lib/db';
