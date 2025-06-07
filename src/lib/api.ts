@@ -1,5 +1,4 @@
-// Use the environment variable for API calls
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = '/api'; // This should use the rewrite path, not the full Railway URL
 
 // Define interface types for API requests and responses
 export interface SignupRequest {
