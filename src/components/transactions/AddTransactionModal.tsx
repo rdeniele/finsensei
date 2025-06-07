@@ -117,7 +117,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
               min="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
               placeholder="Enter amount"
               required
             />
@@ -182,7 +182,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
               type="text"
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
               placeholder="Enter transaction source"
               required
             />
@@ -209,7 +209,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
               disabled={loading}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? <LoadingSpinner /> : 'Create'}
+              {loading ? 'Creating...' : 'Create'}
             </button>
           </div>
         </form>

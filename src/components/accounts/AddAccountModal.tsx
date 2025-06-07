@@ -11,39 +11,24 @@ interface AddAccountModalProps {
 export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalProps) {
   const [accountName, setAccountName] = useState('');
   const [balance, setBalance] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
+    setError('');
 
     try {
-      if (!user?.id) {
-        throw new Error('You must be logged in to create an account');
-      }
+      const { error: createError } = await api.createAccount(accountName, parseFloat(balance));
 
-      if (!accountName.trim()) {
-        throw new Error('Account name is required');
-      }
-
-      if (!balance.trim()) {
-        throw new Error('Balance is required');
-      }
-
-      const balanceNum = parseFloat(balance);
-      if (isNaN(balanceNum)) {
-        throw new Error('Invalid balance amount');
-      }
-
-      await api.createAccount(accountName, balanceNum);
+      if (createError) throw createError;
       onSuccess();
       onClose();
-    } catch (err: any) {
-      console.error('Error creating account:', err);
-      setError(err.message || 'Failed to create account. Please try again.');
+    } catch (error: unknown) {
+      console.error('Error creating account:', error);
+      setError(error instanceof Error ? error.message : 'Failed to create account');
     } finally {
       setLoading(false);
     }
@@ -61,7 +46,8 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               type="text"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              placeholder="Enter account name"
               required
               maxLength={100}
             />
@@ -74,7 +60,8 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               step="0.01"
               value={balance}
               onChange={(e) => setBalance(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
+              placeholder="Enter initial balance"
               required
             />
           </div>
@@ -100,9 +87,9 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? <LoadingSpinner /> : 'Add Account'}
+              {loading ? 'Creating...' : 'Create'}
             </button>
           </div>
         </form>
