@@ -91,6 +91,7 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
 
       {showAddModal && (
         <AddAccountModal
+          isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}
           onSuccess={onAccountAdded}
         />

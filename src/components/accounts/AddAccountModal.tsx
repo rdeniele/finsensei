@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { api } from '@/lib/api';
 
 interface AddAccountModalProps {
+  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalProps) {
+export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccountModalProps) {
+  const { user } = useAuth();
   const [accountName, setAccountName] = useState('');
   const [balance, setBalance] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,12 +21,15 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
     setError('');
 
     try {
-      const { error: createError } = await api.createAccount(accountName, parseFloat(balance));
+      const response = await api.createAccount(accountName, parseFloat(balance));
+      
+      if ('error' in response && typeof response.error === 'string') {
+        throw new Error(response.error);
+      }
 
-      if (createError) throw createError;
       onSuccess();
       onClose();
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error creating account:', error);
       setError(error instanceof Error ? error.message : 'Failed to create account');
     } finally {
@@ -34,14 +37,17 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
     }
   };
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h3 className="text-lg font-semibold mb-4 dark:text-white">Add New Account</h3>
-        
+        <h2 className="text-xl font-semibold mb-4 dark:text-white">Add New Account</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Account Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Account Name
+            </label>
             <input
               type="text"
               value={accountName}
@@ -49,12 +55,12 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white"
               placeholder="Enter account name"
               required
-              maxLength={100}
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Initial Balance</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Initial Balance
+            </label>
             <input
               type="number"
               step="0.01"
@@ -65,7 +71,6 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               required
             />
           </div>
-
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
               <div className="flex">
@@ -75,7 +80,6 @@ export default function AddAccountModal({ onClose, onSuccess }: AddAccountModalP
               </div>
             </div>
           )}
-
           <div className="flex justify-end space-x-3">
             <button
               type="button"

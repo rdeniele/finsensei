@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useAccounts } from '@/lib/hooks/useAccounts';
-import { useTransactions } from '@/lib/hooks/useTransactions';
+import { useTransactions } from '@/hooks/useTransactions';
 import ChatModal from './ChatModal';
 
 const FinancialCoach = () => {
