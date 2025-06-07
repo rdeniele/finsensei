@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Transaction, Account } from '@/lib/api';
+import { Transaction, Account } from '@/types/supabase';
 import { useAuth } from '@/lib/auth';
 import AddTransactionModal from '@/components/transactions/AddTransactionModal';
 
@@ -68,7 +68,7 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
               <div>
                 <h3 className="font-medium text-sm dark:text-white">{transaction.source}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {transaction.date} • {transaction.account_name}
+                  {transaction.date} • {accounts.find(acc => acc.id === transaction.account_id)?.account_name || 'Unknown Account'}
                 </p>
               </div>
             </div>
@@ -77,7 +77,7 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
                 transaction.transaction_type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
               }`}>
                 {transaction.transaction_type === 'income' ? '+' : '-'}
-                {formatCurrency(parseFloat(transaction.amount), userCurrency)}
+                {formatCurrency(transaction.amount, userCurrency)}
               </p>
             </div>
           </div>

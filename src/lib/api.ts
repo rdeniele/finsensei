@@ -1,5 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr';
-import type { Account, Transaction } from './supabase';
+import type { Account, Transaction } from '@/types/supabase';
 import * as db from './db';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;

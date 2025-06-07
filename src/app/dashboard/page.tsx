@@ -12,7 +12,8 @@ import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
 import { fetchFinancialAdvice } from '@/lib/gemini';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/auth';
-import { api, Account, Transaction } from '@/lib/api';
+import { api } from '@/lib/api';
+import { Account, Transaction } from '@/types/supabase';
 import { supabase } from '@/lib/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
