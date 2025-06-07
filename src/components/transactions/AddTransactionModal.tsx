@@ -78,9 +78,9 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
       if (error) throw error;
       onSuccess();
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating transaction:', error);
-      setError(error.message || 'Failed to create transaction. Please try again later.');
+      setError(error instanceof Error ? error.message : 'Failed to create transaction. Please try again later.');
     } finally {
       setLoading(false);
     }

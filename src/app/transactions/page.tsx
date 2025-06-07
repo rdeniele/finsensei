@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import { Card } from '@/components/ui/Card';
@@ -175,16 +175,7 @@ export default function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>();
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/signin');
-      return;
-    }
-
-    fetchData();
-  }, [user, router]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [accountsData, transactionsData] = await Promise.all([
         getAccounts(user!.id),
@@ -198,7 +189,16 @@ export default function TransactionsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/signin');
+      return;
+    }
+
+    fetchData();
+  }, [user, router, fetchData]);
 
   const handleCreateTransaction = async (data: { source: string; amount: string; date: string; transaction_type: 'income' | 'expense' | 'transfer'; account: string }) => {
     try {
