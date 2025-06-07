@@ -1,10 +1,34 @@
-import { fetchFinancialAdvice } from './gemini';
+import { fetchFinancialAdvice } from '@/lib/gemini';
+import type { Account, Transaction } from '@/types/supabase';
 
-export async function getFinancialAdvice(accounts: any[], transactions: any[]) {
+interface FinancialData {
+  accounts: Account[];
+  transactions: Transaction[];
+  totalIncome: number;
+  totalExpenses: number;
+  netBalance: number;
+  currency: string;
+}
+
+export async function getFinancialAdvice(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
   try {
-    const financialData = {
+    const totalIncome = transactions
+      .filter(t => t.transaction_type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const netBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
+
+    const financialData: FinancialData = {
       accounts,
-      transactions
+      transactions,
+      totalIncome,
+      totalExpenses,
+      netBalance,
+      currency
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
@@ -13,10 +37,50 @@ export async function getFinancialAdvice(accounts: any[], transactions: any[]) {
   }
 }
 
-export async function getTransactionInsights(transactions: any[]) {
+export async function getChatResponse(messages: { role: 'user' | 'assistant'; content: string }[], accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
   try {
-    const financialData = {
-      transactions
+    const totalIncome = transactions
+      .filter(t => t.transaction_type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const netBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
+
+    const financialData: FinancialData = {
+      accounts,
+      transactions,
+      totalIncome,
+      totalExpenses,
+      netBalance,
+      currency
+    };
+    return await fetchFinancialAdvice(financialData);
+  } catch (error) {
+    console.error('Error getting chat response:', error);
+    throw new Error('Failed to get chat response');
+  }
+}
+
+export async function getTransactionInsights(transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+  try {
+    const totalIncome = transactions
+      .filter(t => t.transaction_type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const financialData: FinancialData = {
+      accounts: [],
+      transactions,
+      totalIncome,
+      totalExpenses,
+      netBalance: totalIncome - totalExpenses,
+      currency
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
@@ -25,11 +89,52 @@ export async function getTransactionInsights(transactions: any[]) {
   }
 }
 
-export async function getBudgetRecommendations(accounts: any[], transactions: any[]) {
+export async function getAccountInsights(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
   try {
-    const financialData = {
+    const totalIncome = transactions
+      .filter(t => t.transaction_type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const netBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
+
+    const financialData: FinancialData = {
       accounts,
-      transactions
+      transactions,
+      totalIncome,
+      totalExpenses,
+      netBalance,
+      currency
+    };
+    return await fetchFinancialAdvice(financialData);
+  } catch (error) {
+    console.error('Error getting account insights:', error);
+    throw new Error('Failed to get account insights');
+  }
+}
+
+export async function getBudgetRecommendations(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+  try {
+    const totalIncome = transactions
+      .filter(t => t.transaction_type === 'income')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const totalExpenses = transactions
+      .filter(t => t.transaction_type === 'expense')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+
+    const netBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
+
+    const financialData: FinancialData = {
+      accounts,
+      transactions,
+      totalIncome,
+      totalExpenses,
+      netBalance,
+      currency
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
