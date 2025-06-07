@@ -2,31 +2,44 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-if (!process.env.SUPABASE_URL) throw new Error('Missing env.SUPABASE_URL');
-if (!process.env.SUPABASE_ANON_KEY) throw new Error('Missing env.SUPABASE_ANON_KEY');
+export async function GET(request: Request) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-export async function GET() {
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json(
+      { error: 'Missing Supabase environment variables' },
+      { status: 500 }
+    );
+  }
+
   const cookieStore = cookies();
 
   const supabase = createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY,
+    supabaseUrl,
+    supabaseKey,
     {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: any) {
-          cookieStore.set(name, value, options);
-        },
-        remove(name: string, options: any) {
-          cookieStore.set(name, '', options);
-        },
-      },
+      cookies: cookieStore
     }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser();
 
-  return NextResponse.json({ session });
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    return NextResponse.json({ user });
+  } catch (error) {
+    console.error('Error in auth route:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
 } 
