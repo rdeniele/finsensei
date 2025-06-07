@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { api, Account } from '@/lib/api';
+import { Account } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { createTransaction } from '@/lib/db';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -11,7 +12,7 @@ interface AddTransactionModalProps {
 }
 
 export default function AddTransactionModal({ isOpen, onClose, onSuccess, accounts }: AddTransactionModalProps) {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const [source, setSource] = useState('');
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
@@ -19,6 +20,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
   const [toAccount, setToAccount] = useState('');
   const [transactionType, setTransactionType] = useState<'income' | 'expense' | 'transfer'>('expense');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -35,45 +37,52 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount.trim()) {
-      setError('Amount is required');
-      return;
-    }
-    if (!date.trim()) {
-      setError('Date is required');
-      return;
-    }
-    if (!account) {
-      setError('Account is required');
-      return;
-    }
-    if (transactionType === 'transfer' && !toAccount) {
-      setError('Destination account is required for transfer');
-      return;
-    }
-    if (transactionType === 'transfer' && account === toAccount) {
-      setError('Source and destination accounts must be different');
-      return;
-    }
+    setLoading(true);
+    setError('');
 
     try {
-      const payload: any = {
-        amount: parseFloat(amount),
-        date,
-        account: parseInt(account),
-        transaction_type: transactionType,
-      };
-      if (transactionType === 'transfer') {
-        payload.to_account = parseInt(toAccount);
-      } else {
-        payload.source = source;
+      if (!amount.trim()) {
+        throw new Error('Amount is required');
       }
-      await api.createTransaction(token!, payload);
+      if (!date.trim()) {
+        throw new Error('Date is required');
+      }
+      if (!account) {
+        throw new Error('Account is required');
+      }
+      if (transactionType === 'transfer' && !toAccount) {
+        throw new Error('Destination account is required for transfer');
+      }
+      if (transactionType === 'transfer' && account === toAccount) {
+        throw new Error('Source and destination accounts must be different');
+      }
+      if (!source.trim()) {
+        throw new Error('Source/Description is required');
+      }
+
+      const amountNum = parseFloat(amount);
+      if (isNaN(amountNum) || amountNum <= 0) {
+        throw new Error('Amount must be a positive number');
+      }
+
+      const { error } = await createTransaction(user!.id, {
+        amount: amountNum,
+        date,
+        account_id: account,
+        transaction_type: transactionType,
+        source: source,
+        to_account_id: transactionType === 'transfer' ? toAccount : null,
+        user_id: user!.id
+      });
+
+      if (error) throw error;
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating transaction:', error);
-      setError('Failed to create transaction. Please try again later.');
+      setError(error.message || 'Failed to create transaction. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,17 +90,17 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Add New Transaction</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4 dark:text-white">Add New Transaction</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Type
             </label>
             <select
               value={transactionType}
               onChange={(e) => setTransactionType(e.target.value as 'income' | 'expense' | 'transfer')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             >
               <option value="income">Income</option>
               <option value="expense">Expense</option>
@@ -99,37 +108,41 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Amount
             </label>
             <input
               type="number"
               step="0.01"
+              min="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
               placeholder="Enter amount"
+              required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Date
             </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {transactionType === 'transfer' ? 'From Account' : 'Account'}
             </label>
             <select
               value={account}
               onChange={(e) => setAccount(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              required
             >
               <option value="">Select an account</option>
               {accounts.map((acc) => (
@@ -141,17 +154,18 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
           </div>
           {transactionType === 'transfer' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 To Account
               </label>
               <select
                 value={toAccount}
                 onChange={(e) => setToAccount(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                required
               >
                 <option value="">Select destination account</option>
                 {accounts
-                  .filter((acc) => acc.id.toString() !== account)
+                  .filter((acc) => acc.id !== account)
                   .map((acc) => (
                     <option key={acc.id} value={acc.id}>
                       {acc.account_name}
@@ -160,34 +174,42 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
               </select>
             </div>
           )}
-          {transactionType !== 'transfer' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Source/Description
-              </label>
-              <input
-                type="text"
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Enter transaction source"
-              />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Source/Description
+            </label>
+            <input
+              type="text"
+              value={source}
+              onChange={(e) => setSource(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              placeholder="Enter transaction source"
+              required
+            />
+          </div>
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-red-800 dark:text-red-200">{error}</h3>
+                </div>
+              </div>
             </div>
           )}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              disabled={loading}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create
+              {loading ? <LoadingSpinner /> : 'Create'}
             </button>
           </div>
         </form>

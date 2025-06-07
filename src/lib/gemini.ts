@@ -1,9 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { Account, Transaction } from './api';
+import { Account, Transaction } from './supabase';
 
 const GEMINI_API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-interface FinancialData {
+export interface FinancialData {
   accounts: Account[];
   transactions: Transaction[];
   totalIncome: number;

@@ -1,3 +1,15 @@
+import { createBrowserClient } from '@supabase/ssr';
+import type { Account, Transaction } from './supabase';
+import * as db from './db';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+
+if (!supabaseUrl) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
+if (!supabaseAnonKey) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
+
+const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
+
 const API_BASE_URL = '/api'; // This should use the rewrite path, not the full Railway URL
 
 // Define interface types for API requests and responses
@@ -23,30 +35,21 @@ export interface ErrorResponse {
   error: string;
 }
 
-export interface Account {
-  id: number;
-  account_name: string;
-  balance: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Transaction {
-  id: number;
-  account: number;
-  account_name: string;
-  transaction_type: 'income' | 'expense' | 'transfer';
-  source: string;
-  amount: string;
-  date: string;
-  created_at: string;
-  updated_at: string;
-}
-
 export interface Advice {
   content: string;
   timestamp: string;
 }
+
+export { type Account, type Transaction };
+
+// Get the current session
+const getSession = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('No active session');
+  }
+  return session;
+};
 
 export const api = {
   // Auth
@@ -77,157 +80,156 @@ export const api = {
   },
 
   // Accounts
-  getAccounts: async (token: string): Promise<Account[]> => {
-    const response = await fetch(`${API_BASE_URL}/accounts/`, {
-      headers: { 'Authorization': `Token ${token}` }
-    });
-    
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
+  getAccounts: async (): Promise<Account[]> => {
+    try {
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
       throw new Error('Failed to fetch accounts');
     }
-    
-    return response.json();
   },
 
-  createAccount: async (token: string, accountData: { account_name: string; balance: number }): Promise<Account> => {
-    const response = await fetch(`${API_BASE_URL}/accounts/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`,
-      },
-      body: JSON.stringify(accountData),
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
+  createAccount: async (accountName: string, balance: number): Promise<Account> => {
+    try {
+      if (!accountName || accountName.length > 100) {
+        throw new Error('Account name must be between 1 and 100 characters');
       }
-      throw new Error('Failed to create account');
+      
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('accounts')
+        .insert([
+          {
+            user_id: session.user.id,
+            account_name: accountName,
+            balance: balance
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating account:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to create account');
     }
-
-    return response.json();
   },
 
-  updateAccount: async (token: string, accountId: number, accountData: { account_name: string; balance: number }): Promise<Account> => {
-    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`,
-      },
-      body: JSON.stringify(accountData),
-    });
+  updateAccount: async (accountId: string, updates: Partial<Account>): Promise<Account> => {
+    try {
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('accounts')
+        .update(updates)
+        .eq('id', accountId)
+        .eq('user_id', session.user.id)
+        .select()
+        .single();
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
-      throw new Error('Failed to update account');
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating account:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to update account');
     }
-
-    return response.json();
   },
 
-  deleteAccount: async (token: string, accountId: number): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/accounts/${accountId}/`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Token ${token}`,
-      },
-    });
+  deleteAccount: async (accountId: string): Promise<void> => {
+    try {
+      const session = await getSession();
+      const { error } = await supabase
+        .from('accounts')
+        .delete()
+        .eq('id', accountId)
+        .eq('user_id', session.user.id);
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting account:', error);
       throw new Error('Failed to delete account');
     }
   },
   
   // Transactions
-  getTransactions: async (token: string): Promise<Transaction[]> => {
-    const response = await fetch(`${API_BASE_URL}/transactions/`, {
-      headers: { 'Authorization': `Token ${token}` }
-    });
-    
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
+  getTransactions: async (): Promise<Transaction[]> => {
+    try {
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
       throw new Error('Failed to fetch transactions');
     }
-    
-    return response.json();
   },
 
-  createTransaction: async (token: string, transactionData: {
-    account: number;
-    transaction_type: 'income' | 'expense' | 'transfer';
-    source: string;
-    amount: number;
-    date: string;
-  }): Promise<Transaction> => {
-    const response = await fetch(`${API_BASE_URL}/transactions/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`,
-      },
-      body: JSON.stringify(transactionData),
-    });
+  createTransaction: async (transaction: Omit<Transaction, 'id' | 'user_id'>): Promise<Transaction> => {
+    try {
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert([
+          {
+            ...transaction,
+            user_id: session.user.id
+          }
+        ])
+        .select()
+        .single();
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
-      throw new Error('Failed to create transaction');
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating transaction:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to create transaction');
     }
-
-    return response.json();
   },
 
-  updateTransaction: async (token: string, transactionId: number, transactionData: {
-    account: number;
-    transaction_type: 'income' | 'expense' | 'transfer';
-    source: string;
-    amount: number;
-    date: string;
-  }): Promise<Transaction> => {
-    const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`,
-      },
-      body: JSON.stringify(transactionData),
-    });
+  updateTransaction: async (transactionId: string, updates: Partial<Transaction>): Promise<Transaction> => {
+    try {
+      const session = await getSession();
+      const { data, error } = await supabase
+        .from('transactions')
+        .update(updates)
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id)
+        .select()
+        .single();
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
-      throw new Error('Failed to update transaction');
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      throw new Error(error instanceof Error ? error.message : 'Failed to update transaction');
     }
-
-    return response.json();
   },
 
-  deleteTransaction: async (token: string, transactionId: number): Promise<void> => {
-    const response = await fetch(`${API_BASE_URL}/transactions/${transactionId}/`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Token ${token}`,
-      },
-    });
+  deleteTransaction: async (transactionId: string): Promise<void> => {
+    try {
+      const session = await getSession();
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', transactionId)
+        .eq('user_id', session.user.id);
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw 'Unauthorized';
-      }
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
       throw new Error('Failed to delete transaction');
     }
   },

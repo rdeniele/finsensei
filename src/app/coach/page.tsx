@@ -1,66 +1,94 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { fetchFinancialAdvice } from '@/lib/gemini';
-import CoachModal from '@/components/FinancialCoach/CoachModal';
-import CoachButton from '@/components/FinancialCoach/CoachButton';
+import Navbar from '@/components/ui/Navbar';
 import { useAuth } from '@/lib/auth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { api } from '@/lib/api';
+import { getFinancialAdvice } from '@/services/coachService';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import type { Account } from '@/lib/supabase';
+import type { Transaction } from '@/lib/supabase';
 
 export default function CoachPage() {
-  const [showModal, setShowModal] = useState(false);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [advice, setAdvice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { token } = useAuth();
+  const { user } = useAuth();
 
-  const handleGetAdvice = async (): Promise<string> => {
-    setLoading(true);
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/signin');
+      return;
+    }
+    fetchData();
+  }, [user, router]);
+
+  const fetchData = async () => {
     try {
-      const [accounts, transactions] = await Promise.all([
-        api.getAccounts(token!),
-        api.getTransactions(token!)
+      const [accountsData, transactionsData] = await Promise.all([
+        api.getAccounts(),
+        api.getTransactions()
       ]);
-
-      const financialData = {
-        accounts,
-        transactions,
-        totalIncome: transactions
-          .filter(t => t.transaction_type === 'income')
-          .reduce((sum, t) => sum + Number(t.amount), 0),
-        totalExpenses: transactions
-          .filter(t => t.transaction_type === 'expense')
-          .reduce((sum, t) => sum + Number(t.amount), 0),
-        netBalance: accounts.reduce((sum, a) => sum + Number(a.balance), 0),
-        currency: 'USD'
-      };
-
-      const adviceData = await fetchFinancialAdvice(financialData);
-      setAdvice(adviceData);
-      setShowModal(true);
-      return adviceData;
+      setAccounts(accountsData);
+      setTransactions(transactionsData);
     } catch (error) {
-      console.error('Error fetching financial advice:', error);
-      throw new Error('Failed to fetch advice. Please try again later.');
+      console.error('Error fetching data:', error);
+      setError('Failed to fetch data');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleGetAdvice = async () => {
+    try {
+      const advice = await getFinancialAdvice(accounts, transactions);
+      setAdvice(advice);
+    } catch (error) {
+      console.error('Error getting financial advice:', error);
+      setError('Failed to get financial advice');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-bold mb-6 dark:text-white">Financial Coach</h1>
-      <button
-        onClick={() => handleGetAdvice()}
-        disabled={loading}
-        className="bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors disabled:opacity-50"
-      >
-        {loading ? 'Getting Advice...' : 'Get Financial Advice'}
-      </button>
-      {showModal && (
-        <CoachModal onClose={() => setShowModal(false)} onGetAdvice={handleGetAdvice} />
-      )}
-    </div>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Financial Coach</h1>
+            <button
+              onClick={handleGetAdvice}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              Get Advice
+            </button>
+          </div>
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+              {error}
+            </div>
+          )}
+          {advice && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Your Financial Advice</h2>
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{advice}</p>
+            </div>
+          )}
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

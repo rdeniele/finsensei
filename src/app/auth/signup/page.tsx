@@ -1,65 +1,43 @@
 'use client';
+
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 export default function SignUp() {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { login } = useAuth();
+  const { signUp } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    try {
-      const response = await api.signup({ name, email, password });
-      
-      if ('token' in response) {
-        login(response.token, {
-          id: String(response.user_id),
-          name: response.name,
-          email: response.email,
-          currency: 'USD'
-        });
-        router.push('/dashboard');
-      } else {
-        setError('error' in response ? response.error : 'Sign up failed');
-      }
-    } catch {
-      setError('Network error. Please try again.');
-    } finally {
+    const { error: signUpError } = await signUp(email, password);
+    
+    if (signUpError) {
+      setError(signUpError);
       setLoading(false);
+      return;
     }
+
+    // After successful signup, redirect to sign in
+    router.push('/auth/signin');
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="max-w-md w-full space-y-8 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-sm">
         <div>
           <h2 className="text-3xl font-bold text-center">Sign Up</h2>
         </div>
         
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-medium">Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium">Email</label>
             <input

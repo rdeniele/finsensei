@@ -3,18 +3,41 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard');
-    } else {
-      router.push('/auth/signin');
-    }
-  }, [isAuthenticated, router]);
+    const redirect = async () => {
+      try {
+        if (!loading) {
+          if (user) {
+            await router.push('/dashboard');
+          } else {
+            await router.push('/auth/signin');
+          }
+        }
+      } catch (error) {
+        console.error('Navigation error:', error);
+      }
+    };
 
-  return null;
+    redirect();
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <LoadingSpinner />
+    </div>
+  );
 }
