@@ -12,7 +12,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://finsenseibackend-production.up.railway.app/api/:path*',
+        destination: 'https://finsenseibackend-production.up.railway.app/api/:path*'
       },
     ];
   },
