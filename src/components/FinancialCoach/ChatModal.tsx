@@ -32,6 +32,16 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
     scrollToBottom();
   }, [messages]);
 
+  // Add initial greeting when chat opens
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setMessages([{
+        role: 'assistant',
+        content: 'Hello! I\'m your financial coach. How can I help you today?'
+      }]);
+    }
+  }, [isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
@@ -83,7 +93,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl h-[600px] flex flex-col">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Chat with Financial Coach</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Chat with Financial Coach</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
@@ -129,7 +139,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white"
             disabled={loading}
           />
           <button

@@ -6,12 +6,18 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --text-primary: 0, 0, 0;
+  --text-secondary: 55, 65, 81;
+  --text-muted: 107, 114, 128;
 }
 
 .dark {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 17, 24, 39;
   --background-end-rgb: 17, 24, 39;
+  --text-primary: 255, 255, 255;
+  --text-secondary: 229, 231, 235;
+  --text-muted: 156, 163, 175;
 }
 
 * {
@@ -24,29 +30,42 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Dark mode text colors */
-.dark {
-  color: rgb(255, 255, 255);
+/* Universal text color classes */
+.text-primary {
+  color: rgb(var(--text-primary)) !important;
 }
 
-.dark .text-gray-800 {
-  color: rgb(255, 255, 255) !important;
+.text-secondary {
+  color: rgb(var(--text-secondary)) !important;
 }
 
-.dark .text-gray-700 {
-  color: rgb(229, 231, 235) !important;
+.text-muted {
+  color: rgb(var(--text-muted)) !important;
 }
 
-.dark .text-gray-600 {
-  color: rgb(209, 213, 219) !important;
+/* Light mode - default dark text */
+.text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-gray-400 {
+  color: rgb(17, 24, 39) !important; /* Dark text for light mode */
 }
 
-.dark .text-gray-500 {
-  color: rgb(156, 163, 175) !important;
-}
-
+/* Dark mode - override with light text */
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-gray-600,
+.dark .text-gray-500,
 .dark .text-gray-400 {
-  color: rgb(107, 114, 128) !important;
+  color: rgb(255, 255, 255) !important; /* White text for dark mode */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: rgb(var(--text-primary));
+}
+
+/* Paragraphs and general text */
+p, span, div {
+  color: rgb(var(--text-primary));
 }
 
 /* Dark mode background colors */
