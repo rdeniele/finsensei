@@ -256,36 +256,24 @@ export async function updateTransaction(transactionId: string, userId: string, u
 
     if (accountError) throw accountError;
 
-    // Calculate balance adjustment for original transaction
-    let balanceAdjustment = 0;
+    // Calculate the net adjustment needed
+    let currentBalance = Number(account.balance);
+    
+    // Revert original transaction effect
     if (originalTransaction.transaction_type === 'income') {
-      balanceAdjustment -= originalTransaction.amount; // Remove original income
+      currentBalance -= originalTransaction.amount; // Remove original income
     } else if (originalTransaction.transaction_type === 'expense') {
-      balanceAdjustment += originalTransaction.amount; // Add back original expense
-    } else if (originalTransaction.transaction_type === 'transfer') {
-      // Get destination account
-      const { data: toAccount, error: toAccountError } = await supabase
-        .from('accounts')
-        .select('balance')
-        .eq('id', originalTransaction.to_account_id!)
-        .single();
-
-      if (toAccountError) throw toAccountError;
-
-      // Revert transfer
-      const { error: revertSourceError } = await supabase
-        .from('accounts')
-        .update({ balance: Number(account.balance) + originalTransaction.amount })
-        .eq('id', originalTransaction.account_id);
-
-      if (revertSourceError) throw revertSourceError;
-
-      const { error: revertDestError } = await supabase
-        .from('accounts')
-        .update({ balance: Number(toAccount.balance) - originalTransaction.amount })
-        .eq('id', originalTransaction.to_account_id!);
-
-      if (revertDestError) throw revertDestError;
+      currentBalance += originalTransaction.amount; // Add back original expense
+    }
+    
+    // Apply new transaction effect
+    if (updates.transaction_type === 'income') {
+      currentBalance += updates.amount!;
+    } else if (updates.transaction_type === 'expense') {
+      if (currentBalance < updates.amount!) {
+        throw new Error('Insufficient balance');
+      }
+      currentBalance -= updates.amount!;
     }
 
     // Update the transaction
@@ -299,64 +287,10 @@ export async function updateTransaction(transactionId: string, userId: string, u
 
     if (updateError) throw updateError;
 
-    // Get updated account balance
-    const { data: updatedAccount, error: updatedAccountError } = await supabase
-      .from('accounts')
-      .select('balance')
-      .eq('id', updates.account_id || originalTransaction.account_id)
-      .single();
-
-    if (updatedAccountError) throw updatedAccountError;
-
-    // Calculate new balance based on updated transaction
-    let newBalance = Number(updatedAccount.balance);
-    if (updates.transaction_type === 'income') {
-      newBalance += updates.amount!;
-    } else if (updates.transaction_type === 'expense') {
-      if (newBalance < updates.amount!) {
-        throw new Error('Insufficient balance');
-      }
-      newBalance -= updates.amount!;
-    } else if (updates.transaction_type === 'transfer') {
-      if (!updates.to_account_id) {
-        throw new Error('Destination account is required for transfer');
-      }
-      if (newBalance < updates.amount!) {
-        throw new Error('Insufficient balance for transfer');
-      }
-
-      // Get destination account
-      const { data: toAccount, error: toAccountError } = await supabase
-        .from('accounts')
-        .select('balance')
-        .eq('id', updates.to_account_id)
-        .single();
-
-      if (toAccountError) throw toAccountError;
-
-      // Update source account balance
-      const { error: updateSourceError } = await supabase
-        .from('accounts')
-        .update({ balance: newBalance - updates.amount! })
-        .eq('id', updates.account_id);
-
-      if (updateSourceError) throw updateSourceError;
-
-      // Update destination account balance
-      const { error: updateDestError } = await supabase
-        .from('accounts')
-        .update({ balance: Number(toAccount.balance) + updates.amount! })
-        .eq('id', updates.to_account_id);
-
-      if (updateDestError) throw updateDestError;
-
-      return { data: updatedTransaction, error: null };
-    }
-
-    // Update account balance for income/expense
+    // Update account balance with the final calculated balance
     const { error: finalUpdateError } = await supabase
       .from('accounts')
-      .update({ balance: newBalance })
+      .update({ balance: currentBalance })
       .eq('id', updates.account_id || originalTransaction.account_id);
 
     if (finalUpdateError) throw finalUpdateError;
@@ -413,4 +347,4 @@ export async function deleteTransaction(transactionId: string, userId: string) {
     console.error('Error deleting transaction:', error);
     return { error };
   }
-} 
+}
