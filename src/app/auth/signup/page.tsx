@@ -36,6 +36,9 @@ export default function SignUp() {
         <div>
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">Sign Up</h2>
         </div>
+        <div>
+          <h3 className="text-x font-bold text-center text-gray-700 dark:text-gray-300">Check out your email to proceed logging in.</h3>
+        </div>
         
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
