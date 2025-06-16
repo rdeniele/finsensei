@@ -131,9 +131,9 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold dark:text-white">Dashboard</h1>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back, {user?.name || 'User'}</p>
+                <p className="text-gray-600 dark:text-gray-400 mt-1">Welcome back, {user?.email || 'User'}</p>
               </div>
-              <CoachButton accounts={accounts} transactions={transactions} />
+              <CoachButton accounts={accounts} transactions={transactions}/>
             </div>
 
             {advice && <AdviceDisplay advice={advice} isLoading={isLoading} error={error} />}
