@@ -9,109 +9,69 @@ import MiniAccountList from '@/components/dashboard/MiniAccountList';
 import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
 import CoachButton from '@/components/FinancialCoach/CoachButton';
 import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
-import { fetchFinancialAdvice } from '@/lib/gemini';
+import { fetchFinancialAdvice } from '@/services/gemini';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { Account, Transaction } from '@/types/supabase';
 import { supabase } from '@/lib/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import { getGoals } from '@/services/goalService';
+import type { FinancialGoal } from '@/types/supabase';
 
 export default function DashboardPage() {
-  const router = useRouter();
-  const { user } = useAuth();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [goals, setGoals] = useState<FinancialGoal[]>([]);
   const [advice, setAdvice] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpenses, setTotalExpenses] = useState(0);
-  const [netBalance, setNetBalance] = useState(0);
+  const router = useRouter();
+  const { user } = useAuth();
 
   const fetchData = useCallback(async () => {
+    if (!user) return;
+    setIsLoading(true);
     try {
-      const [accountsData, transactionsData] = await Promise.all([
+      const [accountsData, transactionsData, goalsData] = await Promise.all([
         api.getAccounts(),
-        api.getTransactions()
+        api.getTransactions(),
+        getGoals(user.id)
       ]);
       setAccounts(accountsData);
       setTransactions(transactionsData);
+      setGoals(goalsData.filter(goal => goal.status === 'active'));
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch data');
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  // Calculate totals whenever accounts or transactions change
-  useEffect(() => {
-    const newTotalIncome = transactions
-      .filter(t => t.transaction_type === 'income')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    const newTotalExpenses = transactions
-      .filter(t => t.transaction_type === 'expense')
-      .reduce((sum, t) => sum + Number(t.amount), 0);
-
-    const newNetBalance = accounts.reduce((sum, a) => sum + Number(a.balance), 0);
-
-    setTotalIncome(newTotalIncome);
-    setTotalExpenses(newTotalExpenses);
-    setNetBalance(newNetBalance);
-  }, [accounts, transactions]);
+  }, [user]);
 
   useEffect(() => {
-    if (user) {
-      fetchData();
+    if (!user) {
+      router.push('/auth/signin');
+      return;
     }
-  }, [user, fetchData]);
+    fetchData();
+  }, [user, router, fetchData]);
 
-  const handleGetAdvice = async () => {
-    try {
-      const advice = await fetchFinancialAdvice({
-        accounts,
-        transactions,
-        totalIncome,
-        totalExpenses,
-        netBalance,
-        currency: user?.currency || 'USD'
-      });
-      setAdvice(advice);
-    } catch (error) {
-      console.error('Error getting financial advice:', error);
-      setError('Failed to get financial advice');
-    }
-  };
+  const totalIncome = transactions
+    .filter(t => t.amount > 0)
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpenses = transactions
+    .filter(t => t.amount < 0)
+    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+
+  const netBalance = totalIncome - totalExpenses;
 
   // Prepare chart data
-  const last6Months = Array.from({ length: 6 }, (_, i) => {
-    const date = new Date();
-    date.setMonth(date.getMonth() - i);
-    return date.toLocaleString('default', { month: 'short' });
-  }).reverse();
-
   const chartData = {
-    labels: last6Months,
-    incomeData: last6Months.map(month => {
-      return transactions
-        .filter(t => {
-          const date = new Date(t.date);
-          return date.toLocaleString('default', { month: 'short' }) === month && 
-                 t.transaction_type === 'income';
-        })
-        .reduce((sum, t) => sum + Number(t.amount), 0);
-    }),
-    expenseData: last6Months.map(month => {
-      return transactions
-        .filter(t => {
-          const date = new Date(t.date);
-          return date.toLocaleString('default', { month: 'short' }) === month && 
-                 t.transaction_type === 'expense';
-        })
-        .reduce((sum, t) => sum + Number(t.amount), 0);
-    }),
+    labels: ['Income', 'Expenses', 'Net Balance'],
+    incomeData: [totalIncome, 0, 0],
+    expenseData: [0, totalExpenses, 0],
   };
 
   if (isLoading) {
@@ -178,6 +138,67 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-8">
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-xl font-semibold dark:text-white">Active Goals</h2>
+                    <button
+                      onClick={() => router.push('/goals')}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium"
+                    >
+                      View All
+                    </button>
+                  </div>
+                  {goals.length > 0 ? (
+                    <div className="space-y-4">
+                      {goals.map(goal => {
+                        const account = accounts.find(a => a.id === goal.account_id);
+                        const progress = (goal.current_amount / goal.target_amount) * 100;
+                        
+                        return (
+                          <div
+                            key={goal.id}
+                            className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="font-medium text-gray-900 dark:text-white">
+                                  {goal.name}
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {account?.account_name || 'Unknown Account'}
+                                </p>
+                              </div>
+                              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                ${goal.current_amount.toFixed(2)} / ${goal.target_amount.toFixed(2)}
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mb-2">
+                              <div
+                                className="bg-blue-600 h-2 rounded-full"
+                                style={{ width: `${Math.min(progress, 100)}%` }}
+                              ></div>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                              <span>{progress.toFixed(1)}% Complete</span>
+                              <span>Target: {new Date(goal.target_date).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">No active goals yet</p>
+                      <button
+                        onClick={() => router.push('/goals')}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        Create Your First Goal
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                   <MiniAccountList 
                     accounts={accounts} 

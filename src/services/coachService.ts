@@ -1,4 +1,4 @@
-import { fetchFinancialAdvice } from '@/lib/gemini';
+import { fetchFinancialAdvice } from '@/services/gemini';
 import type { Account, Transaction } from '@/types/supabase';
 
 interface FinancialData {

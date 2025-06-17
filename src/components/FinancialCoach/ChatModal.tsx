@@ -2,8 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
-import { sendChatMessage, ChatMessage } from '@/lib/gemini';
+import { sendChatMessage, ChatMessage } from '@/services/gemini';
 import { Account, Transaction } from '@/lib/api';
+import { saveChatMessage, getChatHistory, clearChatHistory } from '@/services/chatService';
+import BaseModal from '@/components/ui/BaseModal';
+import { TextInput } from '@/components/ui/FormInput';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -32,23 +35,43 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
     scrollToBottom();
   }, [messages]);
 
-  // Add initial greeting when chat opens
+  // Load chat history when modal opens
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([{
-        role: 'assistant',
-        content: 'Hello! I\'m your financial coach. How can I help you today?'
-      }]);
-    }
-  }, [isOpen]);
+    const loadChatHistory = async () => {
+      if (isOpen && user) {
+        const history = await getChatHistory(user.id);
+        if (history.length > 0) {
+          setMessages(history);
+        } else {
+          // Add initial greeting if no history exists
+          const greeting = {
+            role: 'assistant',
+            content: 'Hello! I\'m your financial coach. How can I help you today?'
+          };
+          const savedGreeting = await saveChatMessage(user.id, 'assistant', greeting.content);
+          if (savedGreeting) {
+            setMessages([savedGreeting]);
+          }
+        }
+      }
+    };
+
+    loadChatHistory();
+  }, [isOpen, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || loading) return;
+    if (!input.trim() || loading || !user) return;
 
     const userMessage = input.trim();
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    
+    // Save user message
+    const savedUserMessage = await saveChatMessage(user.id, 'user', userMessage);
+    if (savedUserMessage) {
+      setMessages(prev => [...prev, savedUserMessage]);
+    }
+    
     setLoading(true);
 
     try {
@@ -75,30 +98,51 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
         [...messages, { role: 'user', content: userMessage }],
         financialData
       );
-      setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+
+      // Save assistant's response
+      const savedAssistantMessage = await saveChatMessage(user.id, 'assistant', response);
+      if (savedAssistantMessage) {
+        setMessages(prev => [...prev, savedAssistantMessage]);
+      }
     } catch (error) {
       console.error('Error getting chat response:', error);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again.' 
-      }]);
+      const errorMessage = 'Sorry, I encountered an error. Please try again.';
+      const savedErrorMessage = await saveChatMessage(user.id, 'assistant', errorMessage);
+      if (savedErrorMessage) {
+        setMessages(prev => [...prev, savedErrorMessage]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  const handleClearHistory = async () => {
+    if (!user) return;
+    const success = await clearChatHistory(user.id);
+    if (success) {
+      setMessages([]);
+      // Add new greeting
+      const greeting = {
+        role: 'assistant',
+        content: 'Hello! I\'m your financial coach. How can I help you today?'
+      };
+      const savedGreeting = await saveChatMessage(user.id, 'assistant', greeting.content);
+      if (savedGreeting) {
+        setMessages([savedGreeting]);
+      }
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl h-[600px] flex flex-col">
-        <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Chat with Financial Coach</h2>
+    <BaseModal isOpen={isOpen} onClose={onClose} title="Chat with Financial Coach">
+      <div className="h-[600px] flex flex-col">
+        <div className="flex justify-end mb-4">
           <button
-            onClick={onClose}
+            onClick={handleClearHistory}
             className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            title="Clear chat history"
           >
-            ✕
+            🗑️
           </button>
         </div>
 
@@ -134,13 +178,14 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
         </div>
 
         <form onSubmit={handleSubmit} className="flex space-x-2">
-          <input
+          <TextInput
+            label=""
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 bg-white"
             disabled={loading}
+            className="flex-1"
           />
           <button
             type="submit"
@@ -151,7 +196,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
           </button>
         </form>
       </div>
-    </div>
+    </BaseModal>
   );
 };
 

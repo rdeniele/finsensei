@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
+import BaseModal from '@/components/ui/BaseModal';
 
 interface CoachModalProps {
+  isOpen: boolean;
   onClose: () => void;
   onGetAdvice: () => Promise<string>;
 }
 
-const CoachModal: React.FC<CoachModalProps> = ({ onClose, onGetAdvice }) => {
+const CoachModal: React.FC<CoachModalProps> = ({ isOpen, onClose, onGetAdvice }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [advice, setAdvice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -28,19 +30,9 @@ const CoachModal: React.FC<CoachModalProps> = ({ onClose, onGetAdvice }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Financial Coach</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <div className="mb-4">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="Financial Coach">
+      <div className="space-y-4">
+        <div>
           {!advice && !loading && !error && (
             <p className="text-gray-600 dark:text-gray-300">
               Click the button below to get personalized financial advice based on your current financial situation.
@@ -82,7 +74,7 @@ const CoachModal: React.FC<CoachModalProps> = ({ onClose, onGetAdvice }) => {
           </button>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 };
 
