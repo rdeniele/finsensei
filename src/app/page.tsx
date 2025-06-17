@@ -23,7 +23,7 @@ export default function Home() {
         console.error('Navigation error:', error);
       }
     };
-
+ 
     redirect();
   }, [user, loading, router]);
 
