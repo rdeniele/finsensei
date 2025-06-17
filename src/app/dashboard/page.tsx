@@ -9,6 +9,7 @@ import MiniAccountList from '@/components/dashboard/MiniAccountList';
 import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
 import CoachButton from '@/components/FinancialCoach/CoachButton';
 import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
+import LearningHub from '@/components/dashboard/LearningHub';
 import { fetchFinancialAdvice } from '@/services/gemini';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/auth';
@@ -74,6 +75,15 @@ export default function DashboardPage() {
     expenseData: [0, totalExpenses, 0],
   };
 
+  // Add these calculations before the return statement
+  const averageTransactionAmount = transactions.length > 0 
+    ? transactions.reduce((sum, t) => sum + Number(t.amount), 0) / transactions.length 
+    : 0;
+
+  const monthlyExpenses = transactions
+    .filter(t => t.transaction_type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0) / 12;
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -107,8 +117,8 @@ export default function DashboardPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-8">
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                   <h2 className="text-xl font-semibold mb-6 dark:text-white">Financial Overview</h2>
                   <FinancialChart
@@ -134,6 +144,30 @@ export default function DashboardPage() {
                     <li className="flex items-start space-x-3 dark:text-gray-300">
                       <span className="text-2xl">📈</span>
                       <span>{netBalance >= 0 ? 'Your net balance is positive. Keep it up!' : 'Your net balance is negative. Review your expenses.'}</span>
+                    </li>
+                    <li className="flex items-start space-x-3 dark:text-gray-300">
+                      <span className="text-2xl">💰</span>
+                      <span>
+                        {transactions.length > 0 
+                          ? `Average transaction amount: ${averageTransactionAmount.toFixed(2)} ${user?.currency || 'USD'}`
+                          : 'No transactions recorded yet.'}
+                      </span>
+                    </li>
+                    <li className="flex items-start space-x-3 dark:text-gray-300">
+                      <span className="text-2xl">📅</span>
+                      <span>
+                        {monthlyExpenses > 0 
+                          ? `Average monthly expenses: ${monthlyExpenses.toFixed(2)} ${user?.currency || 'USD'}`
+                          : 'No monthly expenses calculated yet.'}
+                      </span>
+                    </li>
+                    <li className="flex items-start space-x-3 dark:text-gray-300">
+                      <span className="text-2xl">🎯</span>
+                      <span>
+                        {goals.length > 0 
+                          ? `You have ${goals.length} active financial goals.`
+                          : 'Set up your first financial goal to start tracking progress.'}
+                      </span>
                     </li>
                   </ul>
                 </div>
@@ -202,17 +236,17 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-                  <MiniAccountList 
-                    accounts={accounts}
-                  />
+                  <MiniAccountList accounts={accounts} />
                 </div>
+
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
-                  <MiniTransactionList 
-                    transactions={transactions}
-                    accounts={accounts}
-                  />
+                  <MiniTransactionList transactions={transactions} accounts={accounts} />
                 </div>
               </div>
+            </div>
+
+            <div className="mt-8">
+              <LearningHub />
             </div>
           </div>
         </main>

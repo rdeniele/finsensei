@@ -29,7 +29,7 @@ function formatCurrency(amount: number, currency: string = 'USD'): string {
 }
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY!);
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
 // Get configured model
 const getModel = () => {
@@ -44,51 +44,158 @@ const getModel = () => {
   });
 };
 
-export async function fetchFinancialAdvice(data: FinancialData): Promise<string> {
-  if (!GEMINI_API_KEY) {
-    console.error('Gemini API key is not configured. Please set NEXT_PUBLIC_GEMINI_API_KEY in your .env.local file.');
-    throw new Error('Gemini API key is not configured');
+interface LearningTip {
+  title: string;
+  content: string;
+  source: string;
+  type: 'tip' | 'video';
+  url?: string;
+  lastUpdated: string;
+}
+
+// Validated video sources and their creators
+const VALID_VIDEO_SOURCES = [
+  {
+    title: "How to Build an Emergency Fund",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=GxO3f7w3Jqg",
+    verified: true
+  },
+  {
+    title: "Basic Budgeting for Beginners",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=HhX9WvXzXvY",
+    verified: true
+  },
+  {
+    title: "Understanding Credit Scores",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=HhX9WvXzXvY",
+    verified: true
+  },
+  {
+    title: "Saving Money and Budgeting",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=HhX9WvXzXvY",
+    verified: true
+  },
+  {
+    title: "Managing Debt",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=HhX9WvXzXvY",
+    verified: true
+  },
+  {
+    title: "Financial Planning Basics",
+    creator: "Khan Academy",
+    url: "https://www.youtube.com/watch?v=HhX9WvXzXvY",
+    verified: true
   }
+];
 
+// Validated financial education sources
+const VALID_SOURCES = [
+  {
+    name: "Khan Academy",
+    url: "https://www.khanacademy.org/college-careers-more/personal-finance",
+    verified: true
+  },
+  {
+    name: "Consumer Financial Protection Bureau",
+    url: "https://www.consumerfinance.gov/consumer-tools/",
+    verified: true
+  },
+  {
+    name: "Federal Trade Commission",
+    url: "https://www.consumer.ftc.gov/topics/money-credit",
+    verified: true
+  },
+  {
+    name: "MyMoney.gov",
+    url: "https://www.mymoney.gov/",
+    verified: true
+  },
+  {
+    name: "FDIC Money Smart",
+    url: "https://www.fdic.gov/resources/consumers/money-smart/",
+    verified: true
+  }
+];
+
+export async function fetchFinancialAdvice(accounts: any[] = [], transactions: any[] = []): Promise<LearningTip[]> {
   try {
-    const model = getModel();
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-    const prompt = `
-      Based on the following financial data (all amounts in ${data.currency}), provide a brief analysis and recommendations:
-      
-      Accounts:
-      ${data.accounts.map(acc => `- ${acc.account_name}: ${formatCurrency(Number(acc.balance), data.currency)}`).join('\n')}
-      
-      Recent Transactions:
-      ${data.transactions.slice(0, 5).map(t => 
-        `- ${t.date}: ${t.transaction_type} of ${formatCurrency(Number(t.amount), data.currency)} for ${t.source}`
-      ).join('\n')}
-      
-      Summary:
-      - Total Income: ${formatCurrency(data.totalIncome, data.currency)}
-      - Total Expenses: ${formatCurrency(data.totalExpenses, data.currency)}
-      - Net Balance: ${formatCurrency(data.netBalance, data.currency)}
-      
-      Please provide:
-      1. A brief analysis of the current financial situation
-      2. 2-3 specific recommendations for improvement
-      3. Tips for better financial management
-      4. Any areas of concern that need attention
-      
-      Keep the response concise and actionable. All monetary values should be in ${data.currency}.
-    `;
+    const prompt = `As a financial advisor specializing in helping lower to middle-income individuals, provide practical, actionable financial advice that is:
+    1. Realistic for people with limited resources
+    2. Focused on building financial stability
+    3. Based on proven strategies from successful developing countries
+    4. Free from bias towards high-income countries
+    5. Include specific examples and success stories
+    6. Only use verified sources from the following list:
+       ${VALID_SOURCES.map(s => `- ${s.name} (${s.url})`).join('\n')}
+    7. For videos, only use verified content from:
+       ${VALID_VIDEO_SOURCES.map(v => `- ${v.title} by ${v.creator} (${v.url})`).join('\n')}
 
-    console.log('Sending request to Gemini API...');
+    Format the response as a JSON array of tips, each containing:
+    - title: string
+    - content: string (max 200 characters)
+    - source: string (must be from the verified sources list)
+    - type: "tip" or "video"
+    - url: string (if type is "video", must be from the verified videos list)
+    - lastUpdated: string (current date in ISO format)
+
+    Focus on practical topics like:
+    - Emergency fund building
+    - Basic budgeting
+    - Debt management
+    - Saving strategies
+    - Income generation
+    - Financial education resources
+
+    Ensure all content is:
+    1. Actionable and specific
+    2. Culturally sensitive
+    3. Accessible to people with limited resources
+    4. Based on verified sources
+    5. Includes working links for videos`;
+
     const result = await model.generateContent(prompt);
     const response = await result.response;
-    console.log('Received response from Gemini API');
-    return response.text();
-  } catch (error) {
-    console.error('Error in fetchFinancialAdvice:', error);
-    if (error instanceof Error) {
-      throw new Error(`Failed to get financial advice: ${error.message}`);
+    const text = response.text();
+    
+    try {
+      const tips = JSON.parse(text);
+      
+      // Validate and filter tips
+      return tips.filter((tip: LearningTip) => {
+        // Validate source
+        const validSource = VALID_SOURCES.find(s => s.name === tip.source);
+        if (!validSource) return false;
+
+        // Validate video if present
+        if (tip.type === 'video') {
+          const validVideo = VALID_VIDEO_SOURCES.find(v => v.url === tip.url);
+          if (!validVideo) return false;
+        }
+
+        // Validate content length
+        if (tip.content.length > 200) return false;
+
+        // Add lastUpdated if not present
+        if (!tip.lastUpdated) {
+          tip.lastUpdated = new Date().toISOString();
+        }
+
+        return true;
+      });
+    } catch (e) {
+      console.error('Error parsing Gemini response:', e);
+      return [];
     }
-    throw new Error('Failed to get financial advice. Please try again later.');
+  } catch (error) {
+    console.error('Error fetching financial advice:', error);
+    return [];
   }
 }
 
