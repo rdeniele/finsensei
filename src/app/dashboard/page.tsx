@@ -10,6 +10,7 @@ import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
 import CoachButton from '@/components/FinancialCoach/CoachButton';
 import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
 import LearningHub from '@/components/dashboard/LearningHub';
+import ProfessionalCoach from '@/components/dashboard/ProfessionalCoach';
 import { fetchFinancialAdvice } from '@/services/gemini';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/lib/auth';
@@ -105,6 +106,8 @@ export default function DashboardPage() {
               </div>
               <CoachButton accounts={accounts} transactions={transactions}/>
             </div>
+
+            <ProfessionalCoach />
 
             {advice && <AdviceDisplay advice={advice} isLoading={isLoading} error={error} />}
 
