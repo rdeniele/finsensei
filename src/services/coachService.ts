@@ -1,5 +1,6 @@
 import { fetchFinancialAdvice } from '@/services/gemini';
 import type { Account, Transaction } from '@/types/supabase';
+import type { LearningTip } from '@/services/gemini';
 
 interface FinancialData {
   accounts: Account[];
@@ -10,7 +11,7 @@ interface FinancialData {
   currency: string;
 }
 
-export async function getFinancialAdvice(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+export async function getFinancialAdvice(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<LearningTip[]> {
   try {
     const totalIncome = transactions
       .filter(t => t.transaction_type === 'income')
@@ -37,7 +38,7 @@ export async function getFinancialAdvice(accounts: Account[], transactions: Tran
   }
 }
 
-export async function getChatResponse(messages: { role: 'user' | 'assistant'; content: string }[], accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+export async function getChatResponse(messages: { role: 'user' | 'assistant'; content: string }[], accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<LearningTip[]> {
   try {
     const totalIncome = transactions
       .filter(t => t.transaction_type === 'income')
@@ -64,7 +65,7 @@ export async function getChatResponse(messages: { role: 'user' | 'assistant'; co
   }
 }
 
-export async function getTransactionInsights(transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+export async function getTransactionInsights(transactions: Transaction[], currency: string = 'USD'): Promise<LearningTip[]> {
   try {
     const totalIncome = transactions
       .filter(t => t.transaction_type === 'income')
@@ -89,7 +90,7 @@ export async function getTransactionInsights(transactions: Transaction[], curren
   }
 }
 
-export async function getAccountInsights(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+export async function getAccountInsights(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<LearningTip[]> {
   try {
     const totalIncome = transactions
       .filter(t => t.transaction_type === 'income')
@@ -116,7 +117,7 @@ export async function getAccountInsights(accounts: Account[], transactions: Tran
   }
 }
 
-export async function getBudgetRecommendations(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<string> {
+export async function getBudgetRecommendations(accounts: Account[], transactions: Transaction[], currency: string = 'USD'): Promise<LearningTip[]> {
   try {
     const totalIncome = transactions
       .filter(t => t.transaction_type === 'income')

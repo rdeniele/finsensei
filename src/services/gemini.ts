@@ -44,7 +44,7 @@ const getModel = () => {
   });
 };
 
-interface LearningTip {
+export interface LearningTip {
   title: string;
   content: string;
   source: string;
@@ -122,7 +122,7 @@ const VALID_SOURCES = [
   }
 ];
 
-export async function fetchFinancialAdvice(accounts: any[] = [], transactions: any[] = []): Promise<LearningTip[]> {
+export async function fetchFinancialAdvice(financialData: FinancialData): Promise<LearningTip[]> {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
