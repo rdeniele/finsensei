@@ -3,12 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --foreground-rgb: 17, 24, 39;
+  --background-start-rgb: 249, 250, 251;
   --background-end-rgb: 255, 255, 255;
-  --text-primary: 0, 0, 0;
+  --text-primary: 17, 24, 39;
   --text-secondary: 55, 65, 81;
   --text-muted: 107, 114, 128;
+  --border-color: 229, 231, 235;
+  --input-bg: 255, 255, 255;
+  --modal-bg: 255, 255, 255;
+  --card-bg: 255, 255, 255;
+  --hover-bg: 243, 244, 246;
 }
 
 .dark {
@@ -18,10 +23,15 @@
   --text-primary: 255, 255, 255;
   --text-secondary: 229, 231, 235;
   --text-muted: 156, 163, 175;
+  --border-color: 55, 65, 81;
+  --input-bg: 31, 41, 55;
+  --modal-bg: 31, 41, 55;
+  --card-bg: 31, 41, 55;
+  --hover-bg: 55, 65, 81;
 }
 
 * {
-  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }
 
 body {
@@ -41,6 +51,70 @@ body {
 
 .text-muted {
   color: rgb(var(--text-muted)) !important;
+}
+
+/* Form elements */
+input, select, textarea {
+  background-color: rgb(var(--input-bg)) !important;
+  border-color: rgb(var(--border-color)) !important;
+  color: rgb(var(--text-primary)) !important;
+}
+
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: rgb(var(--text-muted)) !important;
+}
+
+/* Modal styles */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: rgb(var(--modal-bg));
+  border-color: rgb(var(--border-color));
+}
+
+/* Card styles */
+.card {
+  background-color: rgb(var(--card-bg));
+  border-color: rgb(var(--border-color));
+}
+
+/* Button styles */
+.btn-primary {
+  background-color: rgb(59, 130, 246);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: rgb(37, 99, 235);
+}
+
+.dark .btn-primary {
+  background-color: rgb(37, 99, 235);
+}
+
+.dark .btn-primary:hover {
+  background-color: rgb(29, 78, 216);
+}
+
+.btn-secondary {
+  background-color: rgb(var(--hover-bg));
+  color: rgb(var(--text-primary));
+}
+
+.btn-secondary:hover {
+  background-color: rgb(var(--border-color));
+}
+
+/* Focus styles */
+*:focus {
+  outline: 2px solid rgb(59, 130, 246);
+  outline-offset: 2px;
+}
+
+.dark *:focus {
+  outline-color: rgb(37, 99, 235);
 }
 
 /* Light mode - default dark text */

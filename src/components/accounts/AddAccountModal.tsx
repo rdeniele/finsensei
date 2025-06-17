@@ -49,6 +49,7 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
           onChange={(e) => setAccountName(e.target.value)}
           placeholder="Enter account name"
           required
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         <TextInput
@@ -59,6 +60,7 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
           onChange={(e) => setBalance(e.target.value)}
           placeholder="Enter initial balance"
           required
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         {error && (

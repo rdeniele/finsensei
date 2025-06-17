@@ -1,7 +1,9 @@
 import { useAccounts } from '@/lib/hooks/useAccounts';
 import type { FinancialGoal } from '@/types/supabase';
 import BaseModal from '@/components/ui/BaseModal';
-import { TextInput, Textarea, Select } from '@/components/ui/FormInput';
+import { TextInput, Textarea } from '@/components/ui/FormInput';
+import CustomSelect from '@/components/ui/CustomSelect';
+import { useState, useEffect } from 'react';
 
 interface EditGoalModalProps {
   isOpen: boolean;
@@ -12,15 +14,26 @@ interface EditGoalModalProps {
 
 export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditGoalModalProps) {
   const { accounts } = useAccounts();
+  const [accountId, setAccountId] = useState(goal.account_id || '');
+
+  useEffect(() => {
+    setAccountId(goal.account_id || '');
+  }, [goal.account_id]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    formData.set('accountId', accountId);
+    await onSubmit(formData);
+  };
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="Edit Goal">
-      <form action={onSubmit} className="space-y-4">
-        <Select
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CustomSelect
           label="Account"
-          name="accountId"
-          required
-          defaultValue={goal.account_id || ''}
+          value={accountId}
+          onChange={setAccountId}
           options={[
             { value: '', label: 'Select an account' },
             ...accounts.map(account => ({
@@ -36,6 +49,7 @@ export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditG
           required
           defaultValue={goal.name}
           placeholder="e.g., Emergency Fund"
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         <Textarea
@@ -43,6 +57,7 @@ export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditG
           name="description"
           defaultValue={goal.description || ''}
           placeholder="Describe your goal..."
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         <div>
@@ -60,7 +75,7 @@ export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditG
               step="0.01"
               defaultValue={goal.target_amount}
               placeholder="0.00"
-              className="pl-8"
+              className="pl-8 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             />
           </div>
         </div>
@@ -72,6 +87,7 @@ export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditG
             name="startDate"
             required
             defaultValue={goal.start_date}
+            className="dark:bg-gray-700 dark:text-white"
           />
 
           <TextInput
@@ -80,6 +96,7 @@ export default function EditGoalModal({ isOpen, onClose, onSubmit, goal }: EditG
             name="targetDate"
             required
             defaultValue={goal.target_date}
+            className="dark:bg-gray-700 dark:text-white"
           />
         </div>
 

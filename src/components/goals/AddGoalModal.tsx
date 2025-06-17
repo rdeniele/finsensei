@@ -1,6 +1,8 @@
 import { useAccounts } from '@/lib/hooks/useAccounts';
 import BaseModal from '@/components/ui/BaseModal';
-import { TextInput, Textarea, Select } from '@/components/ui/FormInput';
+import { TextInput, Textarea } from '@/components/ui/FormInput';
+import CustomSelect from '@/components/ui/CustomSelect';
+import { useState, useEffect } from 'react';
 
 interface AddGoalModalProps {
   isOpen: boolean;
@@ -10,15 +12,28 @@ interface AddGoalModalProps {
 
 export default function AddGoalModal({ isOpen, onClose, onSubmit }: AddGoalModalProps) {
   const { accounts } = useAccounts();
+  const [accountId, setAccountId] = useState('');
+
+  useEffect(() => {
+    if (accounts.length > 0 && !accountId) {
+      setAccountId(accounts[0].id);
+    }
+  }, [accounts, accountId]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    formData.set('accountId', accountId);
+    await onSubmit(formData);
+  };
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="Create New Goal">
-      <form action={onSubmit} className="space-y-4">
-        <Select
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <CustomSelect
           label="Account"
-          name="accountId"
-          required
-          defaultValue={accounts[0]?.id || ''}
+          value={accountId}
+          onChange={setAccountId}
           options={[
             { value: '', label: 'Select an account' },
             ...accounts.map(account => ({
@@ -33,12 +48,14 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit }: AddGoalModal
           name="name"
           required
           placeholder="e.g., Emergency Fund"
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         <Textarea
           label="Description"
           name="description"
           placeholder="Describe your goal..."
+          className="dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
         />
 
         <div>
@@ -55,7 +72,7 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit }: AddGoalModal
               min="0"
               step="0.01"
               placeholder="0.00"
-              className="pl-8"
+              className="pl-8 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
             />
           </div>
         </div>
@@ -67,6 +84,7 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit }: AddGoalModal
             name="startDate"
             required
             defaultValue={new Date().toISOString().split('T')[0]}
+            className="dark:bg-gray-700 dark:text-white"
           />
 
           <TextInput
@@ -74,6 +92,7 @@ export default function AddGoalModal({ isOpen, onClose, onSubmit }: AddGoalModal
             type="date"
             name="targetDate"
             required
+            className="dark:bg-gray-700 dark:text-white"
           />
         </div>
 
