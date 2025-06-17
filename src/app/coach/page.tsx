@@ -48,7 +48,7 @@ export default function CoachPage() {
   const handleGetAdvice = async () => {
     try {
       setLoading(true);
-      const advice = await getFinancialAdvice(accounts, transactions);
+      const advice = await getFinancialAdvice(accounts, transactions, user?.currency || 'USD');
       setAdvice(advice);
     } catch (error) {
       console.error('Error getting financial advice:', error);
