@@ -10,11 +10,12 @@ import { getFinancialAdvice } from '@/services/coachService';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import type { Account } from '@/lib/supabase';
 import type { Transaction } from '@/lib/supabase';
+import type { LearningTip } from '@/services/gemini';
 
 export default function CoachPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [advice, setAdvice] = useState<string | null>(null);
+  const [advice, setAdvice] = useState<LearningTip[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -46,11 +47,14 @@ export default function CoachPage() {
 
   const handleGetAdvice = async () => {
     try {
+      setLoading(true);
       const advice = await getFinancialAdvice(accounts, transactions);
       setAdvice(advice);
     } catch (error) {
       console.error('Error getting financial advice:', error);
       setError('Failed to get financial advice');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,10 +85,27 @@ export default function CoachPage() {
               {error}
             </div>
           )}
-          {advice && (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Your Financial Advice</h2>
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{advice}</p>
+          {advice.length > 0 && (
+            <div className="space-y-4">
+              {advice.map((tip, index) => (
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                  <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{tip.title}</h2>
+                  <p className="text-gray-700 dark:text-gray-300 mb-4">{tip.content}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                    <span>Source: {tip.source}</span>
+                    {tip.type === 'video' && tip.url && (
+                      <a 
+                        href={tip.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                      >
+                        Watch Video
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </main>

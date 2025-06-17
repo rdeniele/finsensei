@@ -60,53 +60,99 @@ const SOURCE_URLS: { [key: string]: string } = {
   "NerdWallet": "https://www.nerdwallet.com"
 };
 
+const CACHE_KEY = 'learning_hub_tips';
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
 export default function LearningHub() {
-  const [tips, setTips] = useState<LearningTip[]>(DEFAULT_TIPS);
-  const [isLoading, setIsLoading] = useState(false);
+  const [tips, setTips] = useState<LearningTip[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [lastFetched, setLastFetched] = useState<string | null>(null);
 
   const fetchTips = async () => {
     try {
-      const response = await fetchFinancialAdvice();
+      const response = await fetchFinancialAdvice({
+        accounts: [],
+        transactions: [],
+        totalIncome: 0,
+        totalExpenses: 0,
+        netBalance: 0,
+        currency: 'USD'
+      });
       if (Array.isArray(response)) {
         const formattedTips: LearningTip[] = response.map(tip => ({
           ...tip,
           sourceUrl: SOURCE_URLS[tip.source] || 'https://www.khanacademy.org/college-careers-more/personal-finance',
           videoUrl: tip.type === 'video' ? tip.url : undefined
         }));
+        
+        // Cache the tips with timestamp
+        const cacheData = {
+          tips: formattedTips,
+          timestamp: Date.now()
+        };
+        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        
         setTips(formattedTips);
-        localStorage.setItem('cachedTips', JSON.stringify(formattedTips));
+        setLastFetched(new Date().toISOString());
       }
     } catch (error) {
       console.error('Error fetching tips:', error);
-      // Keep using default tips if fetch fails
+      setTips(DEFAULT_TIPS);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    const checkAndFetchTips = async () => {
-      const lastFetchedDate = localStorage.getItem('lastFetchedTips');
-      const today = new Date().toISOString().split('T')[0];
+    const loadTips = async () => {
+      try {
+        // Try to load from cache first
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        if (cachedData) {
+          const { tips: cachedTips, timestamp } = JSON.parse(cachedData);
+          const isExpired = Date.now() - timestamp > CACHE_EXPIRY;
 
-      // Load cached tips immediately if available
-      const cachedTips = localStorage.getItem('cachedTips');
-      if (cachedTips) {
-        const parsedTips = JSON.parse(cachedTips);
-        if (Array.isArray(parsedTips) && parsedTips.length > 0) {
-          setTips(parsedTips);
-          setLastFetched(lastFetchedDate);
+          if (!isExpired && Array.isArray(cachedTips) && cachedTips.length > 0) {
+            setTips(cachedTips);
+            setLastFetched(new Date(timestamp).toISOString());
+            setIsLoading(false);
+            return;
+          }
         }
-      }
 
-      // Fetch new tips in the background if needed
-      if (!lastFetchedDate || lastFetchedDate.split('T')[0] !== today) {
-        setIsLoading(true);
-        fetchTips();
+        // If no cache or expired, fetch new tips
+        await fetchTips();
+      } catch (error) {
+        console.error('Error loading tips:', error);
+        setTips(DEFAULT_TIPS);
+        setIsLoading(false);
       }
     };
 
-    checkAndFetchTips();
+    loadTips();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold dark:text-white">Learning Hub</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {DEFAULT_TIPS.map((tip, index) => (
+            <div
+              key={index}
+              className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 animate-pulse"
+            >
+              <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-2/3"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
@@ -168,13 +214,6 @@ export default function LearningHub() {
           </div>
         ))}
       </div>
-      {isLoading && (
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Updating content...
-          </p>
-        </div>
-      )}
     </div>
   );
 } 
