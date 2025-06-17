@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/Card';
 import { Account } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import AddAccountModal from '@/components/accounts/AddAccountModal';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string): string {
@@ -17,26 +15,11 @@ function formatCurrency(amount: number, currency: string): string {
 
 interface MiniAccountListProps {
   accounts: Account[];
-  onAccountAdded: () => void;
 }
 
-export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccountListProps) {
+export default function MiniAccountList({ accounts }: MiniAccountListProps) {
   const router = useRouter();
   const { user } = useAuth();
-  const [showAddModal, setShowAddModal] = useState(false);
-
-  const getAccountIcon = (balance: string) => {
-    const amount = parseFloat(balance);
-    return (
-      <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-        amount >= 0 ? 'bg-green-100' : 'bg-red-100'
-      }`}>
-        <svg className={`w-4 h-4 ${amount >= 0 ? 'text-green-600' : 'text-red-600'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-        </svg>
-      </div>
-    );
-  };
 
   const handleAccountClick = () => {
     router.push('/accounts');
@@ -49,10 +32,10 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-base font-semibold dark:text-white">Accounts</h2>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={handleAccountClick}
           className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          + Add Account
+          View All
         </button>
       </div>
 
@@ -87,14 +70,6 @@ export default function MiniAccountList({ accounts, onAccountAdded }: MiniAccoun
         >
           View All Accounts
         </button>
-      )}
-
-      {showAddModal && (
-        <AddAccountModal
-          isOpen={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          onSuccess={onAccountAdded}
-        />
       )}
     </div>
   );

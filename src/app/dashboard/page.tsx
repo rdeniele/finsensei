@@ -58,12 +58,12 @@ export default function DashboardPage() {
   }, [user, router, fetchData]);
 
   const totalIncome = transactions
-    .filter(t => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+    .filter(t => t.transaction_type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const totalExpenses = transactions
-    .filter(t => t.amount < 0)
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+    .filter(t => t.transaction_type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0);
 
   const netBalance = totalIncome - totalExpenses;
 
@@ -115,6 +115,8 @@ export default function DashboardPage() {
                     labels={chartData.labels}
                     incomeData={chartData.incomeData}
                     expenseData={chartData.expenseData}
+                    accounts={accounts}
+                    transactions={transactions}
                   />
                 </div>
 
@@ -201,15 +203,13 @@ export default function DashboardPage() {
 
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                   <MiniAccountList 
-                    accounts={accounts} 
-                    onAccountAdded={fetchData}
+                    accounts={accounts}
                   />
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                   <MiniTransactionList 
                     transactions={transactions}
                     accounts={accounts}
-                    onTransactionAdded={fetchData}
                   />
                 </div>
               </div>

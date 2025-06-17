@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Account } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { getAccounts } from '@/lib/db';
 
 export const useAccounts = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -14,12 +15,13 @@ export const useAccounts = () => {
 
       try {
         setLoading(true);
-        const response = await fetch('/api/accounts');
-        if (!response.ok) {
-          throw new Error('Failed to fetch accounts');
+        const { data, error } = await getAccounts(user.id);
+        
+        if (error) {
+          throw new Error(error);
         }
-        const data = await response.json();
-        setAccounts(data);
+
+        setAccounts(data || []);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));
       } finally {

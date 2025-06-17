@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Transaction, Account } from '@/types/supabase';
 import { useAuth } from '@/lib/auth';
-import AddTransactionModal from '@/components/transactions/AddTransactionModal';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string): string {
@@ -17,11 +15,9 @@ function formatCurrency(amount: number, currency: string): string {
 interface MiniTransactionListProps {
   transactions: Transaction[];
   accounts: Account[];
-  onTransactionAdded: () => void;
 }
 
-export default function MiniTransactionList({ transactions, accounts, onTransactionAdded }: MiniTransactionListProps) {
-  const [showAddModal, setShowAddModal] = useState(false);
+export default function MiniTransactionList({ transactions, accounts }: MiniTransactionListProps) {
   const router = useRouter();
   const { user } = useAuth();
 
@@ -47,10 +43,10 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-base font-semibold dark:text-white">Recent Transactions</h2>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={handleTransactionClick}
           className="text-xs text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
         >
-          + Add Transaction
+          View All
         </button>
       </div>
 
@@ -91,15 +87,6 @@ export default function MiniTransactionList({ transactions, accounts, onTransact
         >
           View All Transactions
         </button>
-      )}
-
-      {showAddModal && (
-        <AddTransactionModal
-          isOpen={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          onSuccess={onTransactionAdded}
-          accounts={accounts}
-        />
       )}
     </div>
   );
