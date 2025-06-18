@@ -1,24 +1,5 @@
-import { createBrowserClient } from '@supabase/ssr';
 import type { Account, Transaction } from './supabase';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
-
-if (!supabaseUrl) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
-if (!supabaseAnonKey) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
-
-// Create Supabase client with retry logic
-const createSupabaseClient = () => {
-  try {
-    const client = createBrowserClient(supabaseUrl, supabaseAnonKey);
-    return client;
-  } catch (error) {
-    console.error('Error creating Supabase client:', error);
-    throw new Error('Failed to initialize database connection');
-  }
-};
-
-const supabase = createSupabaseClient();
+import { supabase } from './supabase';
 
 // Verify connection
 async function verifyConnection() {

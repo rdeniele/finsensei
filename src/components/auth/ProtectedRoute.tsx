@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { supabase } from '@/lib/supabase';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -17,26 +18,29 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        if (!session) {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (!currentSession && !loading) {
           router.push('/auth/signin');
-          return;
         }
       } catch (error) {
-        console.error('ProtectedRoute - Session check error:', error);
-        router.push('/auth/signin');
+        console.error('Error checking session:', error);
       } finally {
         setIsCheckingSession(false);
       }
     };
 
     checkSession();
-  }, [session, router]);
+  }, [loading, router]);
 
   if (loading || isCheckingSession) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
-  if (!user) {
+  if (!session || !user) {
     return null;
   }
 

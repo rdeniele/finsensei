@@ -21,10 +21,8 @@ export default function GoalsPage() {
   const [showContributionModal, setShowContributionModal] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
-      loadGoals();
-    }
-  }, [user]);
+    loadGoals();
+  }, []);
 
   const loadGoals = async () => {
     if (!user) return;

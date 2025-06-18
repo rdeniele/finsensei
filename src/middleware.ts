@@ -1,80 +1,73 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+// Define public routes that don't require authentication
+const publicRoutes = ['/', '/auth/signin', '/auth/signup', '/auth/verify'];
+const isPublicRoute = (path: string) => publicRoutes.some(route => path === route);
 
-if (!supabaseUrl) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
-if (!supabaseAnonKey) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
-export async function middleware(request: NextRequest) {
-  try {
-    const response = NextResponse.next();
-    const supabase = createServerClient(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        cookies: {
-          get(name: string) {
-            return request.cookies.get(name)?.value;
-          },
-          set(name: string, value: string, options: any) {
-            response.cookies.set({
-              name,
-              value,
-              ...options,
-              sameSite: 'lax',
-              secure: process.env.NODE_ENV === 'production',
-              path: '/',
-            });
-          },
-          remove(name: string, options: any) {
-            response.cookies.set({
-              name,
-              value: '',
-              ...options,
-              sameSite: 'lax',
-              secure: process.env.NODE_ENV === 'production',
-              path: '/',
-              maxAge: 0,
-            });
-          },
-        },
-      }
-    );
+  // Refresh session if expired - required for Server Components
+  const { data: { session } } = await supabase.auth.getSession();
 
-    const { data: { session } } = await supabase.auth.getSession();
-    const publicRoutes = ['/auth/signin', '/auth/signup', '/auth/callback'];
-    const isPublicRoute = publicRoutes.some(route => request.nextUrl.pathname.startsWith(route));
-
-    if (session && isPublicRoute) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-
-    if (!session && !isPublicRoute) {
-      const redirectUrl = new URL('/auth/signin', request.url);
-      redirectUrl.searchParams.set('redirectedFrom', request.nextUrl.pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    return response;
-  } catch (error) {
-    console.error('Middleware error:', error);
-    return NextResponse.redirect(new URL('/auth/signin', request.url));
+  // If user is on a public route and has a session, let them stay
+  if (isPublicRoute(req.nextUrl.pathname) && session) {
+    return res;
   }
+
+  // If user is on a public route and has no session, let them stay
+  if (isPublicRoute(req.nextUrl.pathname) && !session) {
+    return res;
+  }
+
+  // Check if the user is trying to access admin routes
+  if (req.nextUrl.pathname.startsWith('/admin')) {
+    if (!session) {
+      // Redirect to login if not authenticated
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
+    // Only allow work.rparagoso@gmail.com to access admin routes
+    if (session.user.email !== 'work.rparagoso@gmail.com') {
+      // Redirect to dashboard if not authorized
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+  }
+
+  // Check if the user is trying to access protected routes
+  if (req.nextUrl.pathname.startsWith('/dashboard') || 
+      req.nextUrl.pathname.startsWith('/settings') ||
+      req.nextUrl.pathname.startsWith('/goals') ||
+      req.nextUrl.pathname.startsWith('/transactions') ||
+      req.nextUrl.pathname.startsWith('/accounts')) {
+    if (!session) {
+      // Redirect to login if not authenticated
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+  }
+
+  return res;
 }
 
+// Specify which routes should be protected
 export const config = {
   matcher: [
+    '/admin/:path*',
+    '/dashboard/:path*',
+    '/goals/:path*',
+    '/transactions/:path*',
+    '/accounts/:path*',
+    '/settings/:path*',
     /*
-     * Match all request paths except:
+     * Match all request paths except for the ones starting with:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * - api routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|public/|api/).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public/).*)',
   ],
 }; 

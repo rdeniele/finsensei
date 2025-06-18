@@ -1,48 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/types/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
 if (!supabaseAnonKey) throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
-// Generate a storage key based on the project URL
-const storageKey = `sb-${supabaseUrl.split('//')[1].split('.')[0]}-auth-token`;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Create a single supabase client for interacting with your database
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
-    autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    storageKey,
-    storage: {
-      getItem: (key) => {
-        if (typeof window === 'undefined') return null;
-        const value = window.localStorage.getItem(key);
-        return value ? JSON.parse(value) : null;
-      },
-      setItem: (key, value) => {
-        if (typeof window === 'undefined') return;
-        window.localStorage.setItem(key, JSON.stringify(value));
-      },
-      removeItem: (key) => {
-        if (typeof window === 'undefined') return;
-        window.localStorage.removeItem(key);
-      },
-    },
-  },
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
 });
 
 // Types for our database tables
-export interface Profile {
+export type Profile = {
   id: string;
-  user_id: string;
-  name: string;
+  full_name: string;
+  avatar_url: string;
+  currency: string;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Account {
+export type Account = {
   id: string;
   user_id: string;
   account_name: string;
@@ -51,9 +35,9 @@ export interface Account {
   currency: string;
   created_at: string;
   updated_at: string;
-}
+};
 
-export interface Transaction {
+export type Transaction = {
   id: string;
   user_id: string;
   account_id: string;
@@ -64,4 +48,4 @@ export interface Transaction {
   date: string;
   created_at: string;
   updated_at: string;
-} 
+}; 

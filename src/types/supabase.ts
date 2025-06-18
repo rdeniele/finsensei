@@ -52,4 +52,89 @@ export interface GoalContribution {
   contribution_date: string;
   notes: string | null;
   created_at: string;
+}
+
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export interface Database {
+  public: {
+    Tables: {
+      settings: {
+        Row: {
+          id: string
+          email_notifications: boolean
+          push_notifications: boolean
+          two_factor_auth: boolean
+          language: string
+          timezone: string
+          maintenance_mode: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email_notifications?: boolean
+          push_notifications?: boolean
+          two_factor_auth?: boolean
+          language?: string
+          timezone?: string
+          maintenance_mode?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email_notifications?: boolean
+          push_notifications?: boolean
+          two_factor_auth?: boolean
+          language?: string
+          timezone?: string
+          maintenance_mode?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      profiles: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          email: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          email: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          email?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+  }
 } 

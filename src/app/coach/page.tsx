@@ -22,12 +22,8 @@ export default function CoachPage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      router.push('/auth/signin');
-      return;
-    }
     fetchData();
-  }, [user, router]);
+  }, []);
 
   const fetchData = async () => {
     try {
@@ -60,9 +56,11 @@ export default function CoachPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <LoadingSpinner />
-      </div>
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      </ProtectedRoute>
     );
   }
 

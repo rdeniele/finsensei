@@ -18,16 +18,14 @@ export default function SignUp() {
     setLoading(true);
     setError('');
 
-    const { error: signUpError } = await signUp(email, password);
-    
-    if (signUpError) {
-      setError(signUpError);
+    try {
+      await signUp(email, password);
+      router.push('/auth/signin');
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    // After successful signup, redirect to sign in
-    router.push('/auth/signin');
   };
 
   return (
