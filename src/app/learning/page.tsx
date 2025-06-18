@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import { useAuth } from '@/lib/auth';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -251,8 +250,6 @@ export default function LearningPage() {
   const [error, setError] = useState<string | null>(null);
   const [expandedModule, setExpandedModule] = useState<number | null>(null);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const router = useRouter();
-  const { user } = useAuth();
 
   useEffect(() => {
     fetchContent();
@@ -262,9 +259,9 @@ export default function LearningPage() {
     try {
       const data = await learningContentService.getActiveContent();
       setContent(data);
-    } catch (error) {
+    } catch (err) {
       setError('Failed to load learning content');
-      console.error(error);
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -308,6 +305,11 @@ export default function LearningPage() {
             <p className="mt-2 text-gray-600 dark:text-gray-400">
               Expand your financial knowledge with our curated collection of educational resources
             </p>
+            {error && (
+              <div className="mt-4 p-4 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-200 rounded-lg">
+                {error}
+              </div>
+            )}
           </div>
 
           {/* Mini Course */}
