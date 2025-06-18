@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   UsersIcon,
-  ChartBarIcon,
   CurrencyDollarIcon,
   AcademicCapIcon,
   ArrowUpIcon,

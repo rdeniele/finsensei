@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -11,7 +10,6 @@ export default function SignInPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,8 +133,8 @@ export default function SignInPage() {
               >
                 {isLoading ? (
                   <div className="flex items-center">
-                    <LoadingSpinner className="w-5 h-5 mr-2" />
-                    Signing in...
+                    <LoadingSpinner />
+                    <span className="ml-2">Signing in...</span>
                   </div>
                 ) : (
                   'Sign in'

@@ -82,22 +82,6 @@ export default function AdminDashboard() {
     },
   ];
 
-  useEffect(() => {
-    if (!authLoading) {
-      if (!session) {
-        router.push('/auth/signin');
-        return;
-      }
-
-      if (user?.email !== 'work.rparagoso@gmail.com') {
-        router.push('/');
-        return;
-      }
-
-      fetchDonations();
-    }
-  }, [user, session, authLoading, router]);
-
   const fetchDonations = async () => {
     try {
       setLoading(true);
@@ -119,6 +103,22 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!authLoading) {
+      if (!session) {
+        router.push('/auth/signin');
+        return;
+      }
+
+      if (user?.email !== 'work.rparagoso@gmail.com') {
+        router.push('/');
+        return;
+      }
+
+      fetchDonations();
+    }
+  }, [user, session, authLoading, router, fetchDonations]);
 
   const calculateMonthlyStats = (donations: Donation[]) => {
     const stats: { [key: string]: MonthlyStats } = {};
@@ -249,7 +249,7 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Manage your platform's content, users, and settings
+            Manage your platform&apos;s content, users, and settings
           </p>
         </div>
 

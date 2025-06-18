@@ -180,7 +180,7 @@ export default function DashboardPage() {
                   <h1 className="text-2xl font-bold dark:text-white">
                     Welcome back, {profile?.name || user?.email?.split('@')[0] || 'User'}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">Here's your financial overview</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">Here&apos;s your financial overview</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">

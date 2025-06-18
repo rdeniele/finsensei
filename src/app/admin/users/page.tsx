@@ -28,13 +28,8 @@ export default function UserManagement() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
   const router = useRouter();
-
-  useEffect(() => {
-    checkAdminAccess();
-    updateAdminProfile();
-  }, []);
 
   const checkAdminAccess = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -143,6 +138,11 @@ export default function UserManagement() {
       setError(error.message || 'Failed to update admin profile');
     }
   };
+
+  useEffect(() => {
+    checkAdminAccess();
+    updateAdminProfile();
+  }, [router]);
 
   const filteredUsers = users.filter(user =>
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||

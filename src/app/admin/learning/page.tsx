@@ -22,7 +22,7 @@ export default function LearningContentAdmin() {
       return;
     }
     fetchContent();
-  }, [user]);
+  }, [user, router]);
 
   const fetchContent = async () => {
     try {

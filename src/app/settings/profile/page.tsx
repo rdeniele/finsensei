@@ -21,13 +21,11 @@ interface Profile {
 }
 
 export default function ProfileSettings() {
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const userId = searchParams.get('userId');
@@ -35,7 +33,9 @@ export default function ProfileSettings() {
   useEffect(() => {
     const checkAdmin = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setIsAdmin(session?.user?.email === 'work.rparagoso@gmail.com');
+      if (session?.user?.email === 'work.rparagoso@gmail.com') {
+        // Handle admin-specific logic here if needed
+      }
     };
     checkAdmin();
   }, []);
@@ -71,13 +71,11 @@ export default function ProfileSettings() {
               .single();
 
             if (createError) throw createError;
-            setProfile(newProfile);
             setName(newProfile.name);
           } else {
             throw error;
           }
         } else {
-          setProfile(data);
           setName(data.name);
         }
       } catch (error) {

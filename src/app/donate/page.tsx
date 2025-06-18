@@ -42,7 +42,7 @@ const donationOptions: DonationOption[] = [
   {
     id: 'nature',
     title: 'Nature Conservation',
-    description: 'Support local tree planting initiatives and beach cleanups. Let\'s keep our planet green and clean!',
+    description: 'Support local tree planting initiatives and beach cleanups. Let&apos;s keep our planet green and clean!',
     icon: SparklesIcon,
     paymentMethods: [
       {
@@ -102,8 +102,8 @@ const donationOptions: DonationOption[] = [
         details: '@rdeniele',
         instructions: [
           'Click the PayPal button below',
-          'Send any amount you\'re comfortable with',
-          'Add a note if you\'d like to be featured in our supporters list',
+          'Send any amount you&apos;re comfortable with',
+          'Add a note if you&apos;d like to be featured in our supporters list',
         ],
       },
     ],
@@ -219,7 +219,7 @@ export default function DonatePage() {
               Thank You for Your Donation!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Your generosity makes a difference. We'll verify your donation and update you soon.
+              Your generosity makes a difference. We&apos;ll verify your donation and update you soon.
             </p>
             <button
               onClick={() => setShowThankYou(false)}
