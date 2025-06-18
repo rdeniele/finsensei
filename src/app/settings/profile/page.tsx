@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -20,7 +20,7 @@ interface Profile {
   updated_at: string;
 }
 
-export default function ProfileSettings() {
+function ProfileContent() {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -236,5 +236,13 @@ export default function ProfileSettings() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function ProfileSettings() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <ProfileContent />
+    </Suspense>
   );
 } 
