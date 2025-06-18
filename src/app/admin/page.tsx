@@ -322,18 +322,18 @@ export default function AdminDashboard() {
 
         {/* Monthly Stats */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow mb-8">
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Monthly Statistics</h2>
             <div className="space-y-4">
               {monthlyStats.map((stat) => (
                 <div key={stat.month} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">{stat.month}</h3>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 sm:mb-0">{stat.month}</h3>
                     <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
                       ₱{stat.total.toLocaleString()}
                     </p>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {Object.entries(stat.causes).map(([cause, amount]) => (
                       <div key={cause} className="bg-gray-50 dark:bg-gray-700 rounded p-2">
                         <p className="text-sm text-gray-600 dark:text-gray-300">{cause}</p>
@@ -350,72 +350,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Donations Table */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  placeholder="Search by email, cause, or payment method..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setFilter('all')}
-                  className={`px-4 py-2 rounded-md ${
-                    filter === 'all'
-                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  All
-                </button>
-                <button
-                  onClick={() => setFilter('pending')}
-                  className={`px-4 py-2 rounded-md ${
-                    filter === 'pending'
-                      ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-200'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  Pending
-                </button>
-                <button
-                  onClick={() => setFilter('verified')}
-                  className={`px-4 py-2 rounded-md ${
-                    filter === 'verified'
-                      ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  Verified
-                </button>
-                <button
-                  onClick={() => setFilter('rejected')}
-                  className={`px-4 py-2 rounded-md ${
-                    filter === 'rejected'
-                      ? 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  Rejected
-                </button>
-              </div>
-            </div>
-          </div>
-
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('created_at')}
-                  >
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('created_at')}>
                     <div className="flex items-center gap-1">
                       Date
                       {sortField === 'created_at' && (
@@ -423,11 +363,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('user_email')}
-                  >
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('user_email')}>
                     <div className="flex items-center gap-1">
                       Donor
                       {sortField === 'user_email' && (
@@ -435,11 +371,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('cause')}
-                  >
+                  <th scope="col" className="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('cause')}>
                     <div className="flex items-center gap-1">
                       Cause
                       {sortField === 'cause' && (
@@ -447,11 +379,7 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('amount')}
-                  >
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('amount')}>
                     <div className="flex items-center gap-1">
                       Amount
                       {sortField === 'amount' && (
@@ -459,23 +387,15 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('payment_method')}
-                  >
+                  <th scope="col" className="hidden sm:table-cell px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('payment_method')}>
                     <div className="flex items-center gap-1">
-                      Payment Method
+                      Payment
                       {sortField === 'payment_method' && (
                         sortDirection === 'asc' ? <ArrowUpIcon className="h-4 w-4" /> : <ArrowDownIcon className="h-4 w-4" />
                       )}
                     </div>
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                    onClick={() => handleSort('status')}
-                  >
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer whitespace-nowrap" onClick={() => handleSort('status')}>
                     <div className="flex items-center gap-1">
                       Status
                       {sortField === 'status' && (
@@ -483,30 +403,30 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider whitespace-nowrap">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredDonations.map((donation) => (
-                  <tr key={donation.id}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <tr key={donation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {new Date(donation.created_at).toLocaleDateString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {donation.user_email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {donation.cause}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       ₱{donation.amount.toLocaleString()}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    <td className="hidden sm:table-cell px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {donation.payment_method}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           donation.status === 'verified'
@@ -519,7 +439,7 @@ export default function AdminDashboard() {
                         {donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       {donation.status === 'pending' && (
                         <div className="flex justify-end gap-2">
                           <button

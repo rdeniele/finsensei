@@ -140,7 +140,7 @@ export default function GoalsPage() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {goals.map(goal => {
                 const account = accounts.find(a => a.id === goal.account_id);
                 const progress = (goal.current_amount / goal.target_amount) * 100;
@@ -148,11 +148,11 @@ export default function GoalsPage() {
                 return (
                   <div
                     key={goal.id}
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6"
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
                           {goal.name}
                         </h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -162,20 +162,22 @@ export default function GoalsPage() {
                       <div className="flex space-x-2">
                         <button
                           onClick={() => setShowEditModal(goal)}
-                          className="text-blue-500 hover:text-blue-700"
+                          className="text-blue-500 hover:text-blue-700 p-1"
+                          aria-label="Edit goal"
                         >
                           ✏️
                         </button>
                         <button
                           onClick={() => handleDeleteGoal(goal.id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 p-1"
+                          aria-label="Delete goal"
                         >
                           🗑️
                         </button>
                       </div>
                     </div>
 
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm sm:text-base">
                       {goal.description}
                     </p>
 
@@ -186,7 +188,7 @@ export default function GoalsPage() {
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                         <div
-                          className="bg-blue-600 h-2 rounded-full"
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${Math.min(progress, 100)}%` }}
                         ></div>
                       </div>
@@ -195,29 +197,24 @@ export default function GoalsPage() {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Current</p>
-                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                           ${goal.current_amount.toFixed(2)}
                         </p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Target</p>
-                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                           ${goal.target_amount.toFixed(2)}
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                      <p>Start: {new Date(goal.start_date).toLocaleDateString()}</p>
-                      <p>Target: {new Date(goal.target_date).toLocaleDateString()}</p>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="flex flex-col sm:flex-row sm:justify-between">
+                        <p>Start: {new Date(goal.start_date).toLocaleDateString()}</p>
+                        <p>Target: {new Date(goal.target_date).toLocaleDateString()}</p>
+                      </div>
                     </div>
-
-                    <button
-                      onClick={() => setShowContributionModal(goal.id)}
-                      className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                    >
-                      Add Contribution
-                    </button>
                   </div>
                 );
               })}

@@ -33,6 +33,9 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   ScaleIcon,
+  BoltIcon,
+  PlusIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 
@@ -226,17 +229,17 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalIncome, user?.currency || 'USD')}
                   </p>
                 </div>
                 <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
-                  <ArrowUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  <ArrowUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </div>
@@ -244,12 +247,12 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalExpenses, user?.currency || 'USD')}
                   </p>
                 </div>
                 <div className="bg-red-100 dark:bg-red-900 p-2 rounded-lg">
-                  <ArrowDownIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+                  <ArrowDownIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
                 </div>
               </div>
             </div>
@@ -257,12 +260,12 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Net Balance</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(netBalance, user?.currency || 'USD')}
                   </p>
                 </div>
                 <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
-                  <ScaleIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <ScaleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </div>
@@ -270,12 +273,12 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Savings Rate</p>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {totalIncome > 0 ? `${((netBalance / totalIncome) * 100).toFixed(1)}%` : 'N/A'}
                   </p>
                 </div>
                 <div className="bg-purple-100 dark:bg-purple-900 p-2 rounded-lg">
-                  <BanknotesIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  <BanknotesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
                 </div>
               </div>
             </div>
@@ -285,12 +288,12 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column - Charts and Insights */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 sm:p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
-                    <ChartBarIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h2 className="text-xl font-semibold dark:text-white">Financial Overview</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold dark:text-white">Financial Overview</h2>
                 </div>
                 <FinancialChart
                   labels={chartData.labels}
@@ -301,17 +304,17 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 sm:p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
-                    <ArrowTrendingUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
                   </div>
-                  <h2 className="text-xl font-semibold dark:text-white">Financial Insights</h2>
+                  <h2 className="text-lg sm:text-xl font-semibold dark:text-white">Financial Insights</h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <div className="flex items-center space-x-3">
-                      <ArrowTrendingUpIcon className="w-6 h-6 text-green-500" />
+                      <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Monthly Savings</p>
                         <p className="font-medium dark:text-white">
@@ -322,33 +325,11 @@ export default function DashboardPage() {
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <div className="flex items-center space-x-3">
-                      <ArrowTrendingDownIcon className="w-6 h-6 text-red-500" />
+                      <ArrowTrendingDownIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-500" />
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Monthly Expenses</p>
                         <p className="font-medium dark:text-white">
                           {formatCurrency(monthlyExpenses, user?.currency || 'USD')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <div className="flex items-center space-x-3">
-                      <WalletIcon className="w-6 h-6 text-blue-500" />
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Avg Transaction</p>
-                        <p className="font-medium dark:text-white">
-                          {formatCurrency(averageTransactionAmount, user?.currency || 'USD')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                    <div className="flex items-center space-x-3">
-                      <CalendarIcon className="w-6 h-6 text-purple-500" />
-                      <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">Expense Ratio</p>
-                        <p className="font-medium dark:text-white">
-                          {totalExpenses > 0 ? `${((totalExpenses / (totalIncome || 1)) * 100).toFixed(1)}%` : 'N/A'}
                         </p>
                       </div>
                     </div>
