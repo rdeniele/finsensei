@@ -202,6 +202,15 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
+                <Link href="/donate" className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-4 text-white hover:opacity-90 transition-opacity">
+                  <div className="flex items-center space-x-3">
+                    <span className="text-2xl">❤️</span>
+                    <div>
+                      <p className="font-medium">Support Us</p>
+                      <p className="text-sm text-purple-100">Help Keep FinSensei Free</p>
+                    </div>
+                  </div>
+                </Link>
               </div>
             </div>
           </div>

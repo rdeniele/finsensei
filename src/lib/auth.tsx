@@ -19,7 +19,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
@@ -38,6 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentSession) {
         setSession(currentSession);
         setUser(currentSession.user as User);
+        
+        // Only redirect if on an auth page
         if (pathname?.startsWith('/auth/')) {
           router.replace('/dashboard');
         }
@@ -45,7 +47,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else if (event === 'SIGNED_OUT') {
       setSession(null);
       setUser(null);
-      if (!pathname?.startsWith('/auth/')) {
+      
+      // Only redirect if not already on an auth page or home page
+      if (!pathname?.startsWith('/auth/') && pathname !== '/') {
         router.replace('/auth/signin');
       }
     }
@@ -61,6 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
+          console.error('Error getting initial session:', sessionError);
           throw sessionError;
         }
 
@@ -68,10 +73,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setSession(initialSession);
           setUser(initialSession.user as User);
           
+          // Only redirect if on an auth page
           if (pathname?.startsWith('/auth/')) {
             router.replace('/dashboard');
           }
         } else {
+          // Only redirect if not on a public route
           if (!pathname?.startsWith('/auth/') && pathname !== '/') {
             router.replace('/auth/signin');
           }
@@ -112,7 +119,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setSession(data.session);
       setUser(data.user);
-      router.replace('/dashboard');
       return { error: null };
     } catch (error) {
       return { error: error as Error };
@@ -124,14 +130,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
-      if (error) throw error;
-      router.replace('/auth/verify');
-    } catch (error: any) {
-      throw error;
+
+      if (error) {
+        return { error };
+      }
+
+      // Check if email confirmation is required
+      if (data?.user?.identities?.length === 0) {
+        router.replace('/auth/verify');
+        return { error: null };
+      }
+
+      return { error: null };
+    } catch (error) {
+      return { error: error as Error };
     } finally {
       setLoading(false);
     }
@@ -147,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       router.replace('/');
     } catch (error: any) {
+      console.error('Error signing out:', error);
       throw error;
     } finally {
       setLoading(false);

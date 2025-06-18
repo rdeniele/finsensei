@@ -25,10 +25,14 @@ export default function SignInPage() {
       const { error: signInError } = await signIn(email.trim(), password);
       
       if (signInError) {
-        throw signInError;
+        if (signInError.message.includes('Invalid login credentials')) {
+          throw new Error('Invalid email or password. Please try again.');
+        } else if (signInError.message.includes('Email not confirmed')) {
+          throw new Error('Please verify your email address before signing in.');
+        } else {
+          throw signInError;
+        }
       }
-      
-      // Remove the manual navigation - let the auth state change handle it
     } catch (err: any) {
       console.error('Sign in error:', err);
       setError(err.message || 'Failed to sign in. Please try again.');
@@ -83,6 +87,7 @@ export default function SignInPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                  placeholder="Enter your email"
                 />
               </div>
             </div>
@@ -101,6 +106,7 @@ export default function SignInPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                  placeholder="Enter your password"
                 />
               </div>
             </div>
