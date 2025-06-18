@@ -206,7 +206,7 @@ export default function DonatePage() {
         {/* Developer Support Banner */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-8 mb-12 text-white shadow-xl">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-2xl font-bold mb-4">Support FinSensei's Mission</h2>
+            <h2 className="text-2xl font-bold mb-4">Support FinSensei&apos;s Mission</h2>
             <p className="text-lg mb-6">
               Your support helps keep FinSensei free and accessible to everyone. Together, we can help more people learn about financial management and achieve their financial goals.
             </p>

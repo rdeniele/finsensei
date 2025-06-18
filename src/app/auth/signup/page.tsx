@@ -46,8 +46,8 @@ export default function SignUp() {
       const { error: signUpError } = await signUp(email.trim(), password);
 
       if (signUpError) {
-        if (signUpError.message.includes('already registered')) {
-          throw new Error('This email is already registered. Please sign in instead.');
+        if (signUpError.message.includes("already registered")) {
+          throw new Error("This email is already registered. Please sign in instead.");
         } else {
           throw signUpError;
         }
@@ -68,7 +68,7 @@ export default function SignUp() {
           <div>
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">Verify Your Email</h2>
             <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-              We've sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+              We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
             </p>
           </div>
           <div className="text-center">

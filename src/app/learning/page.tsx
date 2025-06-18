@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/ui/Navbar';
-import { useAuth } from '@/lib/auth';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { learningContentService, type LearningContent } from '@/services/learningContentService';
 import { 
