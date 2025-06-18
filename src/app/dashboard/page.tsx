@@ -63,13 +63,12 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [showModal, setShowModal] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
-    setIsLoading(true);
     try {
       const [accountsData, transactionsData, goalsData] = await Promise.all([
         api.getAccounts(),
@@ -82,29 +81,27 @@ export default function DashboardPage() {
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch data');
-    } finally {
-      setIsLoading(false);
     }
   }, [user]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
+    if (!user) return;
     try {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .single();
 
       if (error) {
-        // If profile doesn't exist, create it
         if (error.code === 'PGRST116') {
           const { data: newProfile, error: createError } = await supabase
             .from('profiles')
             .insert([
               {
-                user_id: user?.id,
-                name: user?.email?.split('@')[0] || 'User',
-                email: user?.email
+                user_id: user.id,
+                name: user.email?.split('@')[0] || 'User',
+                email: user.email
               }
             ])
             .select()
@@ -120,15 +117,28 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setError('Failed to load profile');
     }
-  };
+  }, [user]);
 
   useEffect(() => {
-    if (user) {
-      fetchData();
-      fetchProfile();
+    if (authLoading) return;
+    
+    if (!user) {
+      router.replace('/auth/signin');
+      return;
     }
-  }, [user, router]);
+
+    setIsLoading(true);
+    Promise.all([fetchData(), fetchProfile()])
+      .catch(error => {
+        console.error('Error loading dashboard data:', error);
+        setError('Failed to load dashboard data');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [user, authLoading, router, fetchData, fetchProfile]);
 
   const totalIncome = transactions
     .filter(t => t.transaction_type === 'income')

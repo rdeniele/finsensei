@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import {
@@ -69,9 +70,16 @@ export default function Navbar() {
                   <Bars3Icon className="h-6 w-6" />
                 )}
               </button>
-              <div className="ml-4 flex items-center">
-                <span className="text-xl font-bold text-gray-900 dark:text-white">FinSensei</span>
-              </div>
+              <Link href="/dashboard" className="ml-4 flex items-center">
+                <Image
+                  src="/finsensei.png"
+                  alt="FinSensei Logo"
+                  width={32}
+                  height={32}
+                  className="rounded-lg"
+                />
+                <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">FinSensei</span>
+              </Link>
             </div>
             <div className="flex items-center space-x-4">
               {isAdmin && (
@@ -136,7 +144,16 @@ export default function Navbar() {
         }`}
       >
         <div className="h-16 flex items-center px-4">
-          <span className="text-xl font-bold text-gray-900 dark:text-white">FinSensei</span>
+          <Link href="/dashboard" className="flex items-center">
+            <Image
+              src="/finsensei.png"
+              alt="FinSensei Logo"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">FinSensei</span>
+          </Link>
         </div>
         <nav className="mt-5 px-2 space-y-1">
           {navigation.map((item) => {

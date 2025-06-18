@@ -1,9 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
-import { supabase } from './supabase';
+import { supabase, auth } from './supabase';
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
 import { useRouter, usePathname } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 type User = SupabaseUser & {
   user_metadata?: {
@@ -32,8 +33,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const initialized = useRef(false);
+  const authStateChangeTimeout = useRef<NodeJS.Timeout>();
+  const mounted = useRef(false);
 
   const handleAuthStateChange = useCallback(async (event: string, currentSession: Session | null) => {
+    if (!mounted.current) return;
+
+    // Clear any existing timeout
+    if (authStateChangeTimeout.current) {
+      clearTimeout(authStateChangeTimeout.current);
+    }
+
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
       if (currentSession) {
         setSession(currentSession);
@@ -42,6 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Only redirect if on an auth page
         if (pathname?.startsWith('/auth/')) {
           router.replace('/dashboard');
+          toast.success('Successfully signed in!');
         }
       }
     } else if (event === 'SIGNED_OUT') {
@@ -51,55 +62,78 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Only redirect if not already on an auth page or home page
       if (!pathname?.startsWith('/auth/') && pathname !== '/') {
         router.replace('/auth/signin');
+        toast.success('Successfully signed out!');
       }
     }
-    setLoading(false);
+
+    // Set a timeout to ensure loading state is cleared
+    authStateChangeTimeout.current = setTimeout(() => {
+      if (mounted.current) {
+        setLoading(false);
+      }
+    }, 250);
   }, [router, pathname]);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
+    mounted.current = true;
 
     const initializeAuth = async () => {
+      if (initialized.current) return;
+      initialized.current = true;
+
       try {
-        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        // Get current session first
+        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Error getting initial session:', sessionError);
+          toast.error('Failed to initialize session');
           throw sessionError;
         }
 
-        if (initialSession) {
-          setSession(initialSession);
-          setUser(initialSession.user as User);
-          
-          // Only redirect if on an auth page
-          if (pathname?.startsWith('/auth/')) {
-            router.replace('/dashboard');
-          }
-        } else {
-          // Only redirect if not on a public route
-          if (!pathname?.startsWith('/auth/') && pathname !== '/') {
-            router.replace('/auth/signin');
+        if (mounted.current) {
+          if (currentSession) {
+            setSession(currentSession);
+            setUser(currentSession.user as User);
+            
+            // Only redirect if on an auth page
+            if (pathname?.startsWith('/auth/')) {
+              router.replace('/dashboard');
+            }
+          } else {
+            // Only redirect if not on a public route
+            if (!pathname?.startsWith('/auth/') && pathname !== '/') {
+              router.replace('/auth/signin');
+            }
           }
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
-        setSession(null);
-        setUser(null);
+        console.error('Error during auth initialization:', error);
+        if (mounted.current) {
+          setSession(null);
+          setUser(null);
+        }
       } finally {
-        setLoading(false);
+        if (mounted.current) {
+          setLoading(false);
+        }
       }
     };
 
-    initializeAuth();
-
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
+    // Initialize auth
+    initializeAuth();
+
     return () => {
+      mounted.current = false;
+      if (authStateChangeTimeout.current) {
+        clearTimeout(authStateChangeTimeout.current);
+      }
       subscription.unsubscribe();
     };
-  }, [router, pathname, handleAuthStateChange]);
+  }, [handleAuthStateChange, router, pathname]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -110,20 +144,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        toast.error(error.message);
         return { error };
       }
 
       if (!data.session) {
-        return { error: new Error('No session returned') };
+        const noSessionError = new Error('No session returned');
+        toast.error(noSessionError.message);
+        return { error: noSessionError };
       }
 
       setSession(data.session);
-      setUser(data.user);
+      setUser(data.user as User);
       return { error: null };
-    } catch (error) {
-      return { error: error as Error };
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      toast.error(error.message || 'Failed to sign in');
+      return { error };
     } finally {
-      setLoading(false);
+      if (mounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -136,20 +177,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        toast.error(error.message);
         return { error };
       }
 
-      // Check if email confirmation is required
-      if (data?.user?.identities?.length === 0) {
-        router.replace('/auth/verify');
-        return { error: null };
-      }
-
+      toast.success('Please check your email to verify your account');
+      router.replace('/auth/verify');
       return { error: null };
-    } catch (error) {
-      return { error: error as Error };
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      toast.error(error.message || 'Failed to sign up');
+      return { error };
     } finally {
-      setLoading(false);
+      if (mounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -157,16 +199,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
       
       setUser(null);
       setSession(null);
       router.replace('/');
     } catch (error: any) {
       console.error('Error signing out:', error);
+      toast.error('Failed to sign out');
       throw error;
     } finally {
-      setLoading(false);
+      if (mounted.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -196,13 +245,13 @@ export function useAuth() {
 
 export function getToken(): string | null {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
+    return localStorage.getItem('finsensei_auth');
   }
   return null;
 }
 
-export function setToken(token: string) {
+export function setToken(token: string): void {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('token', token);
+    localStorage.setItem('finsensei_auth', token);
   }
 } 

@@ -21,19 +21,26 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18.2.0",
-    "react-hot-toast": "^2.5.2"
+    "react-hot-toast": "^2.5.2",
+    "react-slick": "^0.30.3",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@types/node": "20.19.1",
     "@types/react": "18.3.23",
     "@types/react-dom": "^18.2.19",
+    "@types/react-slick": "^0.23.13",
     "@typescript-eslint/eslint-plugin": "^7.0.1",
     "@typescript-eslint/parser": "^7.0.1",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
+    "ico-endec": "^0.1.6",
+    "png-to-ico": "^2.1.8",
     "postcss": "^8.4.35",
+    "sharp": "^0.34.2",
     "tailwindcss": "^3.4.1",
+    "to-ico": "^1.1.5",
     "typescript": "5.8.3"
   }
 }

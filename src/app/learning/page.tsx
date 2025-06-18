@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import Navbar from '@/components/ui/Navbar';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { learningContentService, type LearningContent } from '@/services/learningContentService';
@@ -13,7 +16,9 @@ import {
   ChartBarIcon,
   WalletIcon,
   ArrowTrendingUpIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon
 } from '@heroicons/react/24/outline';
 
 // Course modules data
@@ -243,6 +248,58 @@ const DEFAULT_VIDEOS = [
   }
 ];
 
+// Custom arrow components for the carousel
+interface ArrowProps {
+  onClick?: () => void;
+}
+
+const PrevArrow = ({ onClick }: ArrowProps) => (
+  <button
+    onClick={onClick}
+    className="absolute left-0 z-10 top-1/2 -translate-y-1/2 -translate-x-full bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+  >
+    <ChevronLeftIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+  </button>
+);
+
+const NextArrow = ({ onClick }: ArrowProps) => (
+  <button
+    onClick={onClick}
+    className="absolute right-0 z-10 top-1/2 -translate-y-1/2 translate-x-full bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+  >
+    <ChevronRightIcon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+  </button>
+);
+
+// Carousel settings for both sections
+const carouselSettings = {
+  dots: false,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 5000,
+  prevArrow: <PrevArrow />,
+  nextArrow: <NextArrow />,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+      }
+    },
+    {
+      breakpoint: 640,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      }
+    }
+  ]
+};
+
 export default function LearningPage() {
   const [content, setContent] = useState<LearningContent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -251,20 +308,24 @@ export default function LearningPage() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const data = await learningContentService.getFeaturedContent();
+        // Remove duplicates based on content ID
+        const uniqueContent = data.filter((item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id)
+        );
+        setContent(uniqueContent);
+      } catch (err) {
+        setError('Failed to load learning content');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchContent();
   }, []);
-
-  const fetchContent = async () => {
-    try {
-      const data = await learningContentService.getActiveContent();
-      setContent(data);
-    } catch (err) {
-      setError('Failed to load learning content');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const toggleModule = (moduleId: number) => {
     setExpandedModule(expandedModule === moduleId ? null : moduleId);
@@ -297,6 +358,25 @@ export default function LearningPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <style jsx global>{`
+          .slick-track {
+            display: flex !important;
+            margin: 0 -12px;
+          }
+          .slick-slide {
+            padding: 0 12px;
+          }
+          .slick-slide > div {
+            height: 100%;
+          }
+          .carousel-arrow {
+            opacity: 0;
+            transition: all 0.3s ease;
+          }
+          .carousel-container:hover .carousel-arrow {
+            opacity: 1;
+          }
+        `}</style>
         <Navbar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
@@ -433,79 +513,114 @@ export default function LearningPage() {
             </div>
           </div>
 
-          {/* Admin Content */}
+          {/* Featured Tips */}
           {content.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Featured Tips</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {content.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-                  >
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      {item.description}
-                    </p>
-                    {item.url && (
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        Learn More →
-                      </a>
-                    )}
-                  </div>
-                ))}
+            <div className="mb-16">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Featured Tips</h2>
+              <div className="carousel-container relative px-12">
+                <Slider {...carouselSettings}>
+                  {content.map((item) => (
+                    <div key={item.id}>
+                      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 h-full">
+                        <div className="flex items-start gap-3 mb-4">
+                          <div className="bg-indigo-100 dark:bg-indigo-900/50 p-2 rounded-lg shrink-0">
+                            <AcademicCapIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          </div>
+                          <div>
+                            <h3 className="text-base font-medium text-gray-900 dark:text-white mb-2">
+                              {item.title}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                              {item.description}
+                            </p>
+                          </div>
+                        </div>
+                        {item.url && (
+                          <a
+                            href={item.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                          >
+                            Learn More
+                            <svg
+                              className="w-4 h-4 ml-1"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
               </div>
             </div>
           )}
 
           {/* Video Tutorials */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Video Tutorials</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {DEFAULT_VIDEOS.map((video, index) => (
-                <div
-                  key={index}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
-                >
-                  <div className="aspect-video">
-                    <iframe
-                      src={video.url.replace('youtu.be', 'youtube.com/embed')}
-                      title={video.title}
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <div className="bg-red-100 dark:bg-red-900 p-2 rounded-lg">
-                        <PlayIcon className="w-4 h-4 text-red-600 dark:text-red-400" />
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Video Tutorials</h2>
+            <div className="carousel-container relative px-12">
+              <Slider {...carouselSettings}>
+                {DEFAULT_VIDEOS.map((video, index) => (
+                  <div key={index} className="px-2">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden h-full transform transition-transform duration-300 hover:shadow-md hover:-translate-y-1">
+                      <div className="aspect-video">
+                        <iframe
+                          src={video.url.replace('youtu.be', 'youtube.com/embed')}
+                          title={video.title}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        {video.title}
-                      </h3>
+                      <div className="p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className="bg-red-100 dark:bg-red-900/50 p-2 rounded-lg">
+                            <PlayIcon className="w-5 h-5 text-red-600 dark:text-red-400" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">
+                            {video.title}
+                          </h3>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                          {video.description}
+                        </p>
+                        <a
+                          href={video.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 group"
+                        >
+                          Watch on YouTube
+                          <svg 
+                            className="w-4 h-4 ml-1 transform transition-transform group-hover:translate-x-1" 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            stroke="currentColor"
+                          >
+                            <path 
+                              strokeLinecap="round" 
+                              strokeLinejoin="round" 
+                              strokeWidth={2} 
+                              d="M9 5l7 7-7 7" 
+                            />
+                          </svg>
+                        </a>
+                      </div>
                     </div>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      {video.description}
-                    </p>
-                    <a
-                      href={video.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                    >
-                      Watch on YouTube →
-                    </a>
                   </div>
-                </div>
-              ))}
+                ))}
+              </Slider>
             </div>
           </div>
         </main>

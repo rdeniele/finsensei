@@ -4,35 +4,36 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { supabase } from '@/lib/supabase';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, session, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        if (!currentSession && !loading) {
-          router.push('/auth/signin');
-        }
-      } catch (error) {
-        console.error('Error checking session:', error);
-      } finally {
-        setIsCheckingSession(false);
+    let redirectTimeout: NodeJS.Timeout;
+
+    if (!loading && !user && !isRedirecting) {
+      setIsRedirecting(true);
+      // Add a small delay before redirect to prevent flash
+      redirectTimeout = setTimeout(() => {
+        router.replace('/auth/signin');
+      }, 100);
+    }
+
+    return () => {
+      if (redirectTimeout) {
+        clearTimeout(redirectTimeout);
       }
     };
+  }, [loading, user, router, isRedirecting]);
 
-    checkSession();
-  }, [loading, router]);
-
-  if (loading || isCheckingSession) {
+  // Show loading spinner while checking auth or during redirect
+  if (loading || isRedirecting) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <LoadingSpinner />
@@ -40,9 +41,11 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!session || !user) {
-    return null;
+  // If we have a user, render the protected content
+  if (user) {
+    return <>{children}</>;
   }
 
-  return <>{children}</>;
+  // Return null while redirecting
+  return null;
 } 
