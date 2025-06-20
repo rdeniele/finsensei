@@ -72,7 +72,7 @@ export default function SignUp() {
             </p>
           </div>
           <div className="text-center">
-            <Link href="/auth/signin" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+            <Link href="/auth/signin/" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
               Return to Sign In
             </Link>
           </div>
@@ -164,7 +164,7 @@ export default function SignUp() {
 
         <div className="text-center">
           <span className="text-gray-600 dark:text-gray-300">Already have an account? </span>
-          <Link href="/auth/signin" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+          <Link href="/auth/signin/" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
             Sign in
           </Link>
         </div>
