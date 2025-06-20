@@ -182,7 +182,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       toast.success('Please check your email to verify your account');
-      router.replace('/auth/verify');
       return { error: null };
     } catch (error: any) {
       console.error('Sign up error:', error);

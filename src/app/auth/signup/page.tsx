@@ -75,8 +75,11 @@ export default function SignUp() {
             </p>
           </div>
           <div className="text-center">
-            <Link href="/auth/signin" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
-              Return to Sign In
+            <Link 
+              href="/auth/signin" 
+              className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600"
+            >
+              Back to Sign In
             </Link>
           </div>
         </div>

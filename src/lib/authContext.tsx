@@ -129,7 +129,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
       });
       if (error) throw error;
-      router.replace('/auth/verify');
     } catch (error: any) {
       throw error;
     } finally {
