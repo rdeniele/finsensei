@@ -70,6 +70,9 @@ export default function SignUp() {
             <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
               We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
             </p>
+            <p className="mt-2 text-center text-sm text-gray-500 dark:text-gray-400">
+              Don&apos;t see the email? Check your spam folder as well.
+            </p>
           </div>
           <div className="text-center">
             <Link href="/auth/signin/" className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
