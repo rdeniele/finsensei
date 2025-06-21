@@ -64,7 +64,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      role: 'user',
+      role: 'user' as const,
       content: inputMessage,
       timestamp: new Date()
     };
@@ -168,10 +168,10 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
       // Add new greeting
       const greeting = {
         id: Date.now().toString(),
-        role: 'assistant',
+        role: 'assistant' as const,
         content: 'Hello! I\'m your financial coach. How can I help you today?',
         timestamp: new Date()
-      };
+      } satisfies Message;
       setMessages([greeting]);
     }
   };
