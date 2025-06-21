@@ -7,20 +7,18 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import {
   HomeIcon,
-  ChartBarIcon,
   WalletIcon,
-  AcademicCapIcon,
   FlagIcon,
-  ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   BanknotesIcon,
   SunIcon,
   MoonIcon,
-  HeartIcon,
   ShieldCheckIcon,
   UserCircleIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 import { useTheme } from 'next-themes';
 import { supabase } from '@/lib/supabase';
@@ -43,8 +41,7 @@ export default function Navbar() {
     { name: 'Accounts', href: '/accounts', icon: BanknotesIcon },
     { name: 'Transactions', href: '/transactions', icon: WalletIcon },
     { name: 'Goals', href: '/goals', icon: FlagIcon },
-    { name: 'Learning Hub', href: '/learning', icon: AcademicCapIcon },
-    { name: 'Donate', href: '/donate', icon: HeartIcon },
+    { name: 'Buy Coins', href: '/coins', icon: CurrencyDollarIcon },
     { name: 'Settings', href: '/settings/profile', icon: Cog6ToothIcon },
   ];
 

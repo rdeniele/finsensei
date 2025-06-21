@@ -6,14 +6,12 @@ import {
   HomeIcon,
   ChartBarIcon,
   WalletIcon,
-  AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
   { name: 'Accounts', href: '/accounts', icon: WalletIcon },
-  { name: 'Learning', href: '/learning', icon: AcademicCapIcon },
 ];
 
 export default function Sidebar() {

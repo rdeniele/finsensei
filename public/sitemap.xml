@@ -25,21 +25,15 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://finsensei.com/learning</loc>
+    <loc>https://finsensei.com/coins</loc>
     <lastmod>2024-03-22</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://finsensei.com/accounts</loc>
     <lastmod>2024-03-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://finsensei.com/donate</loc>
-    <lastmod>2024-03-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
   </url>
 </urlset> 

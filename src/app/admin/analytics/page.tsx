@@ -6,7 +6,6 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import {
   UsersIcon,
   CurrencyDollarIcon,
-  AcademicCapIcon,
   ArrowUpIcon,
   ArrowDownIcon,
 } from '@heroicons/react/24/outline';
@@ -16,10 +15,8 @@ interface AnalyticsData {
   activeUsers: number;
   totalTransactions: number;
   totalAmount: number;
-  learningContentViews: number;
   userGrowth: number;
   transactionGrowth: number;
-  contentGrowth: number;
 }
 
 export default function Analytics() {
@@ -57,25 +54,17 @@ export default function Analytics() {
         .select('amount');
       const totalAmount = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
 
-      // Fetch learning content views
-      const { count: learningContentViews } = await supabase
-        .from('learning_content')
-        .select('*', { count: 'exact', head: true });
-
       // Calculate growth rates (mock data for now)
       const userGrowth = 15; // 15% growth
       const transactionGrowth = 25; // 25% growth
-      const contentGrowth = 10; // 10% growth
 
       setData({
         totalUsers: totalUsers || 0,
         activeUsers: activeUsers || 0,
         totalTransactions: totalTransactions || 0,
         totalAmount,
-        learningContentViews: learningContentViews || 0,
         userGrowth,
         transactionGrowth,
-        contentGrowth,
       });
     } catch (error) {
       setError('Failed to fetch analytics data');
@@ -118,7 +107,7 @@ export default function Analytics() {
         </div>
       )}
 
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
         {/* Total Users */}
         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
           <div className="p-5">
@@ -194,46 +183,6 @@ export default function Analytics() {
             <div className="text-sm">
               <span className="text-gray-500 dark:text-gray-400">
                 Total amount: ${data.totalAmount.toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Learning Content */}
-        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <AcademicCapIcon className="h-6 w-6 text-gray-400" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                    Learning Content
-                  </dt>
-                  <dd className="flex items-baseline">
-                    <div className="text-2xl font-semibold text-gray-900 dark:text-white">
-                      {data.learningContentViews}
-                    </div>
-                    <div className={`ml-2 flex items-baseline text-sm font-semibold ${
-                      data.contentGrowth >= 0 ? 'text-green-600' : 'text-red-600'
-                    }`}>
-                      {data.contentGrowth >= 0 ? (
-                        <ArrowUpIcon className="h-4 w-4 flex-shrink-0 self-center" />
-                      ) : (
-                        <ArrowDownIcon className="h-4 w-4 flex-shrink-0 self-center" />
-                      )}
-                      <span className="ml-1">{Math.abs(data.contentGrowth)}%</span>
-                    </div>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 dark:bg-gray-700 px-5 py-3">
-            <div className="text-sm">
-              <span className="text-gray-500 dark:text-gray-400">
-                Total learning resources available
               </span>
             </div>
           </div>

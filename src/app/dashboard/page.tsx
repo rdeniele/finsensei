@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import FinancialMetrics from '@/components/dashboard/FinancialMetrics';
@@ -9,7 +9,6 @@ import MiniAccountList from '@/components/dashboard/MiniAccountList';
 import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
 import CoachButton from '@/components/FinancialCoach/CoachButton';
 import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
-import LearningHub from '@/components/dashboard/LearningHub';
 import ProfessionalCoach from '@/components/dashboard/ProfessionalCoach';
 import { fetchFinancialAdvice } from '@/services/gemini';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -28,7 +27,6 @@ import {
   BanknotesIcon,
   CalendarIcon,
   FlagIcon,
-  AcademicCapIcon,
   UserCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
@@ -38,6 +36,7 @@ import {
   ClockIcon,
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
+import DailyCoins from '@/components/DailyCoins';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string): string {
@@ -215,15 +214,6 @@ export default function DashboardPage() {
                     </div>
                   </div>
                 </div>
-                <Link href="/donate" className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg p-4 text-white hover:opacity-90 transition-opacity">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">❤️</span>
-                    <div>
-                      <p className="font-medium">Support Us</p>
-                      <p className="text-sm text-purple-100">Help Keep FinSensei Free</p>
-                    </div>
-                  </div>
-                </Link>
               </div>
             </div>
           </div>
@@ -406,6 +396,11 @@ export default function DashboardPage() {
                 )}
               </div>
 
+              {/* Daily Coins Section */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <DailyCoins />
+              </div>
+
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
                 <MiniAccountList accounts={accounts} />
               </div>
@@ -414,11 +409,6 @@ export default function DashboardPage() {
                 <MiniTransactionList transactions={transactions} accounts={accounts} />
               </div>
             </div>
-          </div>
-
-          {/* Learning Hub Section */}
-          <div className="mt-6">
-            <LearningHub />
           </div>
         </main>
 

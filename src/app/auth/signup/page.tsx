@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import TermsAndConditions from '@/components/TermsAndConditions';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -13,6 +14,7 @@ export default function SignUp() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [isVerificationSent, setIsVerificationSent] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const router = useRouter();
   const { signUp } = useAuth();
 
@@ -40,25 +42,54 @@ export default function SignUp() {
       return;
     }
 
+    // Show terms and conditions before proceeding
+    setShowTerms(true);
+  };
+
+  const handleAcceptTerms = async () => {
+    setShowTerms(false);
     setLoading(true);
 
     try {
-      const { error: signUpError } = await signUp(email.trim(), password);
+      // Use the test API to get more detailed error information
+      const response = await fetch('/api/test-signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password
+        }),
+      });
 
-      if (signUpError) {
-        if (signUpError.message.includes("already registered")) {
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error('Signup API error:', result);
+        
+        // Handle specific error cases
+        if (result.error?.includes('Anonymous sign-ins are disabled')) {
+          throw new Error('Signup is currently disabled. Please contact support.');
+        } else if (result.error?.includes('already registered')) {
           throw new Error("This email is already registered. Please sign in instead.");
         } else {
-          throw signUpError;
+          throw new Error(result.error || 'Failed to create account. Please try again.');
         }
       }
 
       setIsVerificationSent(true);
     } catch (error: any) {
+      console.error('Signup error:', error);
       setError(error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDeclineTerms = () => {
+    setShowTerms(false);
+    setError('You must accept the Terms and Conditions to create an account.');
   };
 
   if (isVerificationSent) {
@@ -137,6 +168,17 @@ export default function SignUp() {
             />
           </div>
 
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            By creating an account, you agree to our{' '}
+            <button
+              type="button"
+              onClick={() => setShowTerms(true)}
+              className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 underline"
+            >
+              Terms and Conditions
+            </button>
+          </div>
+
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/50 p-4">
               <div className="flex">
@@ -175,6 +217,15 @@ export default function SignUp() {
           </Link>
         </div>
       </div>
+
+      {/* Terms and Conditions Modal */}
+      {showTerms && (
+        <TermsAndConditions
+          onAccept={handleAcceptTerms}
+          onDecline={handleDeclineTerms}
+          type="signup"
+        />
+      )}
     </div>
   );
 }
