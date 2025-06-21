@@ -35,7 +35,7 @@ export default function TermsAndConditions({ onAccept, onDecline, type }: TermsA
               <section>
                 <h4 className="font-semibold text-gray-900 dark:text-white mb-2">1. Acceptance of Terms</h4>
                 <p>
-                  By using FinSensei ("Service"), you agree to be bound by these Terms and Conditions ("Terms"). 
+                  By using FinSensei (&quot;Service&quot;), you agree to be bound by these Terms and Conditions (&quot;Terms&quot;). 
                   If you do not agree to these Terms, do not use the Service. These Terms constitute a legally 
                   binding agreement between you and FinSensei.
                 </p>
@@ -112,7 +112,7 @@ export default function TermsAndConditions({ onAccept, onDecline, type }: TermsA
                   <li>We do not guarantee investment returns or financial outcomes</li>
                   <li>Users should consult qualified financial professionals for specific advice</li>
                   <li>We are not responsible for any financial losses or decisions made based on our content</li>
-                  <li>The Service is provided "as is" without warranties of any kind</li>
+                  <li>The Service is provided &quot;as is&quot; without warranties of any kind</li>
                 </ul>
               </section>
 

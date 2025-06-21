@@ -85,9 +85,9 @@ export default function DebugAuthPage() {
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>Go to your Supabase project dashboard</li>
                 <li>Navigate to <strong>Authentication {'>'}{' '}Settings</strong></li>
-                <li>Ensure <strong>"Enable email signups"</strong> is turned ON</li>
-                <li>Ensure <strong>"Enable email confirmations"</strong> is turned ON</li>
-                <li>Make sure <strong>"Disable anonymous sign-ins"</strong> is OFF</li>
+                <li>Ensure <strong>&quot;Enable email signups&quot;</strong> is turned ON</li>
+                <li>Ensure <strong>&quot;Enable email confirmations&quot;</strong> is turned ON</li>
+                <li>Make sure <strong>&quot;Disable anonymous sign-ins&quot;</strong> is OFF</li>
               </ul>
             </div>
 

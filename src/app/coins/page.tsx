@@ -109,7 +109,7 @@ export default function BuyCoinsPage() {
                 Thank You!
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                We'll email you shortly to confirm the payment details.
+                We&apos;ll email you shortly to confirm the payment details.
               </p>
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6">
                 <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
