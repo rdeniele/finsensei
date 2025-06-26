@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import LandingPage from '@/components/LandingPage';
 
 export default function Home() {
   const router = useRouter();
@@ -12,12 +13,8 @@ export default function Home() {
   useEffect(() => {
     const redirect = async () => {
       try {
-        if (!loading) {
-          if (user) {
-            await router.push('/dashboard');
-          } else {
-            await router.push('/auth/signin');
-          }
+        if (!loading && user) {
+          await router.push('/dashboard');
         }
       } catch (error) {
         console.error('Navigation error:', error);
@@ -35,6 +32,12 @@ export default function Home() {
     );
   }
 
+  // Show landing page for unauthenticated users
+  if (!user) {
+    return <LandingPage />;
+  }
+
+  // Show loading while redirecting authenticated users
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <LoadingSpinner />

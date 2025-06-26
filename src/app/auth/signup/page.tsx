@@ -97,6 +97,14 @@ export default function SignUp() {
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
           <div>
+            <div className="text-center mb-4">
+              <Link 
+                href="/" 
+                className="inline-flex items-center text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
+                ← Back to Home
+              </Link>
+            </div>
             <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">Verify Your Email</h2>
             <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
               We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
@@ -122,6 +130,14 @@ export default function SignUp() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="max-w-md w-full space-y-8 p-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
         <div>
+          <div className="text-center mb-4">
+            <Link 
+              href="/" 
+              className="inline-flex items-center text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400"
+            >
+              ← Back to Home
+            </Link>
+          </div>
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white">Create an Account</h2>
           <p className="mt-2 text-center text-gray-600 dark:text-gray-400">
             Join FinSensei to start managing your finances

@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
 
     // If user is on a public route
     if (isPublicRoute(req.nextUrl.pathname)) {
-      // Redirect authenticated users away from auth pages to dashboard
+      // Only redirect authenticated users away from auth pages to dashboard
       if (session && (req.nextUrl.pathname === '/auth/signin' || req.nextUrl.pathname === '/auth/signup')) {
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
