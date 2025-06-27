@@ -210,12 +210,6 @@ export default function BuyCoinsPage() {
                       {plan.chats.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-300">Price per chat:</span>
-                    <span className="font-semibold text-gray-900 dark:text-white">
-                      ${plan.price_per_chat}
-                    </span>
-                  </div>
                 </div>
 
                 <ul className="space-y-2 mb-6">

@@ -102,37 +102,80 @@ export async function addContribution(
   contributionDate: string,
   notes: string
 ): Promise<GoalContribution | null> {
-  // First, add the contribution record
-  const { data: contribution, error: contributionError } = await supabase
-    .from('goal_contributions')
-    .insert([
-      {
-        goal_id: goalId,
-        amount,
-        contribution_date: contributionDate,
-        notes
-      }
-    ])
-    .select()
-    .single();
+  try {
+    // Validate inputs
+    if (!goalId) {
+      throw new Error('Goal ID is required');
+    }
+    if (!amount || amount <= 0) {
+      throw new Error('Amount must be greater than 0');
+    }
+    if (!contributionDate) {
+      throw new Error('Contribution date is required');
+    }
 
-  if (contributionError) {
-    console.error('Error adding contribution:', contributionError);
-    throw contributionError;
+    console.log('Adding contribution with data:', {
+      goalId,
+      amount,
+      contributionDate,
+      notes
+    });
+
+    // First, add the contribution record
+    const contributionData = {
+      goal_id: goalId,
+      amount,
+      contribution_date: contributionDate,
+      notes: notes || ''
+    };
+
+    console.log('Inserting contribution data:', contributionData);
+
+    const { data: contribution, error: contributionError } = await supabase
+      .from('goal_contributions')
+      .insert([contributionData])
+      .select()
+      .single();
+
+    if (contributionError) {
+      console.error('Error adding contribution record:', contributionError);
+      console.error('Error details:', {
+        code: contributionError.code,
+        message: contributionError.message,
+        details: contributionError.details,
+        hint: contributionError.hint
+      });
+      throw new Error(`Failed to add contribution: ${contributionError.message}`);
+    }
+
+    console.log('Contribution added successfully:', contribution);
+
+    // Then, update the goal's current amount
+    console.log('Updating goal amount for goal:', goalId, 'with amount:', amount);
+    
+    const { error: updateError } = await supabase.rpc('update_goal_amount', {
+      goal_id: goalId,
+      contribution_amount: amount
+    });
+
+    if (updateError) {
+      console.error('Error updating goal amount:', updateError);
+      console.error('Update error details:', {
+        code: updateError.code,
+        message: updateError.message,
+        details: updateError.details,
+        hint: updateError.hint
+      });
+      throw new Error(`Failed to update goal amount: ${updateError.message}`);
+    }
+
+    console.log('Goal amount updated successfully');
+
+    return contribution;
+  } catch (error) {
+    console.error('Error in addContribution:', error);
+    throw error;
   }
-
-  // Then, update the goal's current amount
-  const { error: updateError } = await supabase.rpc('update_goal_amount', {
-    goal_id: goalId,
-    contribution_amount: amount
-  });
-
-  if (updateError) {
-    console.error('Error updating goal amount:', updateError);
-    throw updateError;
-  }
-
-  return contribution;
 }
 
 export async function getContributions(goalId: string): Promise<GoalContribution[]> {

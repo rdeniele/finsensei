@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Account } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { getAccounts } from '@/lib/db';
+import type { Account } from '@/types/supabase';
 
 export const useAccounts = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -15,13 +15,8 @@ export const useAccounts = () => {
 
       try {
         setLoading(true);
-        const { data, error } = await getAccounts(user.id);
-        
-        if (error) {
-          throw new Error(error);
-        }
-
-        setAccounts(data || []);
+        const data = await getAccounts(user.id);
+        setAccounts(data);
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));
       } finally {

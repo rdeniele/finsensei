@@ -1,20 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Navbar from '@/components/ui/Navbar';
-import { Card } from '@/components/ui/Card';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
+import { getAccounts, createAccount, updateAccount, deleteAccount } from '@/lib/db';
+import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { api } from '@/lib/api';
-import type { Account } from '@/types/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import AddAccountModal from '@/components/accounts/AddAccountModal';
+import {
+  PlusIcon,
+  WalletIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline';
+import type { Account } from '@/types/supabase';
 
 // Helper function to format currency
-function formatCurrency(amount: number, currency: string = 'USD'): string {
+function formatCurrency(amount: number, currency: string): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: currency || 'USD', 
+    currency: currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount);
@@ -117,25 +122,26 @@ export default function AccountsPage() {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
-
-  const fetchAccounts = async () => {
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return;
     try {
-      const data = await api.getAccounts();
+      const data = await getAccounts(user.id);
       setAccounts(data);
     } catch (error) {
       console.error('Error fetching accounts:', error);
-      setError('Failed to fetch accounts');
+      setError('Failed to load accounts');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   const handleCreateAccount = async (data: { account_name: string; balance: string }) => {
     try {
-      await api.createAccount(data.account_name, parseFloat(data.balance));
+      await createAccount(user!.id, data.account_name, parseFloat(data.balance));
       await fetchAccounts();
       setIsModalOpen(false);
     } catch (error) {
@@ -148,11 +154,9 @@ export default function AccountsPage() {
     if (!selectedAccount) return;
     
     try {
-      await api.updateAccount(selectedAccount.id, {
+      await updateAccount(selectedAccount.id, {
         account_name: data.account_name,
         balance: parseFloat(data.balance),
-        account_type: selectedAccount.account_type,
-        currency: selectedAccount.currency
       });
       await fetchAccounts();
       setSelectedAccount(null);
@@ -164,7 +168,7 @@ export default function AccountsPage() {
 
   const handleDeleteAccount = async (accountId: string) => {
     try {
-      await api.deleteAccount(accountId);
+      await deleteAccount(accountId);
       await fetchAccounts();
     } catch (error) {
       console.error('Error deleting account:', error);

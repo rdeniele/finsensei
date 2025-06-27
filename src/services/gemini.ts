@@ -206,7 +206,6 @@ export async function sendChatMessage(messages: ChatMessage[], financialData: Fi
   }
 
   try {
-    console.log('Initializing Gemini API...');
     const model = getModel();
 
     const context = `
@@ -231,10 +230,8 @@ export async function sendChatMessage(messages: ChatMessage[], financialData: Fi
       Please provide a helpful and concise response to the user's latest message. All monetary values should be in ${financialData.currency}.
     `;
 
-    console.log('Sending message to Gemini API...');
     const result = await model.generateContent(context);
     const response = await result.response;
-    console.log('Received response from Gemini API');
     return response.text();
   } catch (error) {
     console.error('Error in sendChatMessage:', error);

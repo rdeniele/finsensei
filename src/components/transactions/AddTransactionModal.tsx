@@ -24,6 +24,14 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Debug logging
+  useEffect(() => {
+    if (isOpen) {
+      console.log('AddTransactionModal - Accounts received:', accounts);
+      console.log('AddTransactionModal - Accounts length:', accounts?.length);
+    }
+  }, [isOpen, accounts]);
+
   useEffect(() => {
     if (isOpen) {
       // Reset form when modal opens
@@ -89,6 +97,47 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
   };
 
   if (!isOpen) return null;
+
+  // Check if there are accounts available
+  if (!accounts || accounts.length === 0) {
+    return (
+      <BaseModal isOpen={isOpen} onClose={onClose} title="Add New Transaction">
+        <div className="text-center py-8">
+          <div className="mb-4">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            No Accounts Available
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+            You need to create at least one account before you can add transactions.
+          </p>
+          <div className="flex justify-center space-x-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                // You could add navigation to accounts page here
+                window.location.href = '/accounts';
+              }}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            >
+              Create Account
+            </button>
+          </div>
+        </div>
+      </BaseModal>
+    );
+  }
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose} title="Add New Transaction">

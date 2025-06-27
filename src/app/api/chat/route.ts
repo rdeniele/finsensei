@@ -24,7 +24,8 @@ export async function POST(request: NextRequest) {
       .filter((t: any) => t.type === 'expense')
       .reduce((sum: number, t: any) => sum + Math.abs(Number(t.amount)), 0);
 
-    financialData.netBalance = financialData.totalIncome - financialData.totalExpenses;
+    financialData.netBalance = financialData.accounts
+      .reduce((sum: number, account: any) => sum + Number(account.balance), 0);
 
     // Prepare chat messages
     const messages = [

@@ -18,7 +18,8 @@ interface FinancialMetricsProps {
 }
 
 export default function FinancialMetrics({ income, expenses, netBalance, currency }: FinancialMetricsProps) {
-  const savingsRate = income > 0 ? ((netBalance / income) * 100) : 0;
+  const netSavings = income - expenses;
+  const savingsRate = income > 0 ? ((netSavings / income) * 100) : 0;
   const expenseRate = income > 0 ? ((expenses / income) * 100) : 0;
 
   return (
@@ -29,7 +30,7 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
           {formatCurrency(income, currency)}
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {income > 0 ? 'Your monthly income' : 'No income recorded'}
+          {income > 0 ? 'Your total income' : 'No income recorded'}
         </p>
       </Card>
       <Card className="p-6 dark:bg-gray-800">
@@ -42,7 +43,7 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
         </p>
       </Card>
       <Card className="p-6 dark:bg-gray-800">
-        <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Net Balance</h3>
+        <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">Current Balance</h3>
         <p className={`text-2xl font-bold mt-2 ${
           netBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
         }`}>
@@ -50,8 +51,8 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
         </p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {netBalance >= 0 
-            ? `You saved ${savingsRate.toFixed(1)}% of your income`
-            : 'Your expenses exceed your income'}
+            ? `Your current account balance`
+            : 'Your account balance is negative'}
         </p>
       </Card>
     </div>

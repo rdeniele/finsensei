@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { useAccounts } from '@/lib/hooks/useAccounts';
 import { getGoals, createGoal, deleteGoal, addContribution, updateGoal } from '@/services/goalService';
-import type { FinancialGoal, GoalContribution } from '@/types/supabase';
-import type { Account } from '@/lib/api';
+import type { FinancialGoal } from '@/types/supabase';
 import Navbar from '@/components/ui/Navbar';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AddGoalModal from '@/components/goals/AddGoalModal';
@@ -20,17 +19,17 @@ export default function GoalsPage() {
   const [showEditModal, setShowEditModal] = useState<FinancialGoal | null>(null);
   const [showContributionModal, setShowContributionModal] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadGoals();
-  }, []);
-
-  const loadGoals = async () => {
+  const loadGoals = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     const userGoals = await getGoals(user.id);
     setGoals(userGoals);
     setLoading(false);
-  };
+  }, [user]);
+
+  useEffect(() => {
+    loadGoals();
+  }, [loadGoals]);
 
   const handleCreateGoal = async (formData: FormData) => {
     if (!user) return;
@@ -87,14 +86,29 @@ export default function GoalsPage() {
   };
 
   const handleAddContribution = async (goalId: string, formData: FormData) => {
-    const amount = parseFloat(formData.get('amount') as string);
-    const contributionDate = formData.get('contributionDate') as string;
-    const notes = formData.get('notes') as string;
+    try {
+      const amount = parseFloat(formData.get('amount') as string);
+      const contributionDate = formData.get('contributionDate') as string;
+      const notes = formData.get('notes') as string;
 
-    const contribution = await addContribution(goalId, amount, contributionDate, notes);
-    if (contribution) {
-      await loadGoals(); // Reload goals to get updated amounts
-      setShowContributionModal(null);
+      if (!amount || amount <= 0) {
+        alert('Please enter a valid amount greater than 0');
+        return;
+      }
+
+      if (!contributionDate) {
+        alert('Please select a contribution date');
+        return;
+      }
+
+      const contribution = await addContribution(goalId, amount, contributionDate, notes);
+      if (contribution) {
+        await loadGoals(); // Reload goals to get updated amounts
+        setShowContributionModal(null);
+      }
+    } catch (error) {
+      console.error('Error adding contribution:', error);
+      alert(`Failed to add contribution: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -173,6 +187,13 @@ export default function GoalsPage() {
                           aria-label="Delete goal"
                         >
                           🗑️
+                        </button>
+                        <button
+                          onClick={() => setShowContributionModal(goal.id)}
+                          className="text-green-500 hover:text-green-700 p-1"
+                          aria-label="Add contribution"
+                        >
+                          ➕
                         </button>
                       </div>
                     </div>
@@ -255,7 +276,11 @@ export default function GoalsPage() {
                   Add Contribution
                 </h2>
                 <form
-                  action={(formData) => handleAddContribution(showContributionModal, formData)}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.currentTarget);
+                    handleAddContribution(showContributionModal, formData);
+                  }}
                   className="space-y-4"
                 >
                   <div>
@@ -280,6 +305,7 @@ export default function GoalsPage() {
                       type="date"
                       name="contributionDate"
                       required
+                      defaultValue={new Date().toISOString().split('T')[0]}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                     />
                   </div>

@@ -1,25 +1,10 @@
--- Create a function to update goal amount and status
-create or replace function update_goal_amount(goal_id uuid, contribution_amount numeric)
-returns void as $$
-declare
-  current_amount numeric;
-  target_amount numeric;
-begin
-  -- Get current and target amounts
-  select current_amount, target_amount
-  into current_amount, target_amount
-  from financial_goals
-  where id = goal_id;
+-- This migration is now handled in the main financial_goals migration
+-- Keeping this file for reference but the functions are now in 20240322000000_add_financial_goals.sql
 
-  -- Update the goal with new amount and status
-  update financial_goals
-  set
-    current_amount = current_amount + contribution_amount,
-    status = case
-      when current_amount + contribution_amount >= target_amount then 'completed'
-      else 'active'
-    end,
-    updated_at = now()
-  where id = goal_id;
-end;
-$$ language plpgsql security definer; 
+-- The following functions are now created in the main migration:
+-- - update_goal_amount(goal_id uuid, contribution_amount numeric)
+-- - get_goal_progress(goal_id uuid)
+-- - get_user_goals_summary(user_uuid uuid)
+-- - update_updated_at_column() trigger function
+
+-- This file can be removed or kept for documentation purposes 

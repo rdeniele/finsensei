@@ -23,7 +23,8 @@
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.5.2",
     "react-slick": "^0.30.3",
-    "slick-carousel": "^1.8.1"
+    "slick-carousel": "^1.8.1",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/node": "20.19.1",

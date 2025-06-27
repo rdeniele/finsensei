@@ -37,7 +37,7 @@ export default function TransactionsPage() {
         getAccounts(user!.id),
         getTransactions(user!.id)
       ]);
-      setAccounts(accountsData.data || []);
+      setAccounts(accountsData || []);
       setTransactions(transactionsData.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);

@@ -14,15 +14,8 @@ async function verifyConnection() {
 }
 
 // Account CRUD operations
-export async function getAccounts(userId: string) {
+export async function getAccounts(userId: string): Promise<Account[]> {
   try {
-    // Verify connection first
-    const isConnected = await verifyConnection();
-    if (!isConnected) {
-      throw new Error('Unable to connect to database');
-    }
-
-    console.log('Fetching accounts for user:', userId);
     const { data, error } = await supabase
       .from('accounts')
       .select('*')
@@ -34,39 +27,22 @@ export async function getAccounts(userId: string) {
       throw error;
     }
 
-    console.log('Accounts fetched successfully:', data);
-    return { data, error: null };
-  } catch (error: any) {
+    return data || [];
+  } catch (error) {
     console.error('Error fetching accounts:', error);
-    return { 
-      data: null, 
-      error: error.message || 'Failed to fetch accounts. Please try again.' 
-    };
+    throw error;
   }
 }
 
-export async function createAccount(userId: string, accountName: string, balance: number) {
+export async function createAccount(userId: string, accountName: string, balance: number): Promise<Account> {
   try {
-    // Verify connection first
-    const isConnected = await verifyConnection();
-    if (!isConnected) {
-      throw new Error('Unable to connect to database');
-    }
-
-    console.log('Creating account with:', { userId, accountName, balance });
-    
-    // Validate inputs
-    if (!userId) throw new Error('User ID is required');
-    if (!accountName) throw new Error('Account name is required');
-    if (isNaN(balance)) throw new Error('Invalid balance amount');
-
     const { data, error } = await supabase
       .from('accounts')
       .insert([
         {
           user_id: userId,
           account_name: accountName,
-          balance: balance,
+          balance: balance
         }
       ])
       .select()
@@ -77,14 +53,10 @@ export async function createAccount(userId: string, accountName: string, balance
       throw error;
     }
 
-    console.log('Account created successfully:', data);
-    return { data, error: null };
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     console.error('Error creating account:', error);
-    return { 
-      data: null, 
-      error: error.message || 'Failed to create account. Please try again.' 
-    };
+    throw error;
   }
 }
 

@@ -1,42 +1,31 @@
 'use client';
 
-import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
+import { getAccounts, getTransactions } from '@/lib/db';
+import { getGoals } from '@/services/goalService';
 import Navbar from '@/components/ui/Navbar';
-import FinancialMetrics from '@/components/dashboard/FinancialMetrics';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import FinancialChart from '@/components/dashboard/FinancialChart';
+import DailyCoins from '@/components/DailyCoins';
 import MiniAccountList from '@/components/dashboard/MiniAccountList';
 import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
 import CoachButton from '@/components/FinancialCoach/CoachButton';
-import AdviceDisplay from '@/components/FinancialCoach/AdviceDisplay';
-import ProfessionalCoach from '@/components/dashboard/ProfessionalCoach';
-import { fetchFinancialAdvice } from '@/services/gemini';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { useAuth } from '@/lib/auth';
-import { api } from '@/lib/api';
-import { Account, Transaction } from '@/types/supabase';
-import { supabase } from '@/lib/supabase';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import { getGoals } from '@/services/goalService';
-import type { FinancialGoal } from '@/types/supabase';
 import {
-  ChartBarIcon,
-  WalletIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  BanknotesIcon,
-  CalendarIcon,
-  FlagIcon,
   UserCircleIcon,
   ArrowUpIcon,
   ArrowDownIcon,
   ScaleIcon,
-  BoltIcon,
-  PlusIcon,
-  ClockIcon,
+  BanknotesIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  FlagIcon,
 } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import DailyCoins from '@/components/DailyCoins';
+import type { Account, Transaction, FinancialGoal } from '@/types/supabase';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string): string {
@@ -61,28 +50,25 @@ export default function DashboardPage() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [goals, setGoals] = useState<FinancialGoal[]>([]);
-  const [advice, setAdvice] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [showModal, setShowModal] = useState(false);
-  const [profile, setProfile] = useState<Profile | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!user) return;
     try {
-      const [accountsData, transactionsData, goalsData] = await Promise.all([
-        api.getAccounts(),
-        api.getTransactions(),
+      const [accountsData, transactionsResult, goalsData] = await Promise.all([
+        getAccounts(user.id),
+        getTransactions(user.id),
         getGoals(user.id)
       ]);
+      
       setAccounts(accountsData);
-      setTransactions(transactionsData);
-      setGoals(goalsData.filter(goal => goal.status === 'active'));
+      setTransactions(transactionsResult.data || []);
+      setGoals(goalsData);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Failed to fetch data');
     }
   }, [user]);
 
@@ -119,7 +105,6 @@ export default function DashboardPage() {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setError('Failed to load profile');
     }
   }, [user]);
 
@@ -135,7 +120,6 @@ export default function DashboardPage() {
     Promise.all([fetchData(), fetchProfile()])
       .catch(error => {
         console.error('Error loading dashboard data:', error);
-        setError('Failed to load dashboard data');
       })
       .finally(() => {
         setIsLoading(false);
@@ -150,23 +134,48 @@ export default function DashboardPage() {
     .filter(t => t.transaction_type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0);
 
-  const netBalance = totalIncome - totalExpenses;
+  // Calculate net balance from actual account balances
+  const totalAccountBalance = accounts.reduce((sum, account) => sum + Number(account.balance), 0);
+  
+  // Net balance should be the current account balance (which reflects all transactions)
+  const netBalance = totalAccountBalance;
+
+  // Calculate savings rate based on current period (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  
+  const recentIncome = transactions
+    .filter(t => t.transaction_type === 'income' && new Date(t.created_at) >= thirtyDaysAgo)
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+    
+  const recentExpenses = transactions
+    .filter(t => t.transaction_type === 'expense' && new Date(t.created_at) >= thirtyDaysAgo)
+    .reduce((sum, t) => sum + Number(t.amount), 0);
+    
+  const recentNetSavings = recentIncome - recentExpenses;
+  const savingsRate = recentIncome > 0 ? ((recentNetSavings / recentIncome) * 100) : 0;
+
+  // Calculate monthly averages based on actual transaction history
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+  
+  const recentTransactions = transactions.filter(t => new Date(t.created_at) >= sixMonthsAgo);
+  const monthlyIncome = recentTransactions
+    .filter(t => t.transaction_type === 'income')
+    .reduce((sum, t) => sum + Number(t.amount), 0) / 6;
+    
+  const monthlyExpenses = recentTransactions
+    .filter(t => t.transaction_type === 'expense')
+    .reduce((sum, t) => sum + Number(t.amount), 0) / 6;
+    
+  const monthlySavings = monthlyIncome - monthlyExpenses;
 
   // Prepare chart data
   const chartData = {
     labels: ['Income', 'Expenses', 'Net Balance'],
-    incomeData: [totalIncome, 0, 0],
-    expenseData: [0, totalExpenses, 0],
+    incomeData: [monthlyIncome, 0, 0],
+    expenseData: [0, monthlyExpenses, 0],
   };
-
-  // Add these calculations before the return statement
-  const averageTransactionAmount = transactions.length > 0 
-    ? transactions.reduce((sum, t) => sum + Number(t.amount), 0) / transactions.length 
-    : 0;
-
-  const monthlyExpenses = transactions
-    .filter(t => t.transaction_type === 'expense')
-    .reduce((sum, t) => sum + Number(t.amount), 0) / 12;
 
   if (isLoading) {
     return (
@@ -227,6 +236,7 @@ export default function DashboardPage() {
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalIncome, user?.currency || 'USD')}
                   </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
                 </div>
                 <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
                   <ArrowUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
@@ -240,6 +250,7 @@ export default function DashboardPage() {
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalExpenses, user?.currency || 'USD')}
                   </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
                 </div>
                 <div className="bg-red-100 dark:bg-red-900 p-2 rounded-lg">
                   <ArrowDownIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
@@ -249,10 +260,11 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Net Balance</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Current Balance</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(netBalance, user?.currency || 'USD')}
                   </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Across all accounts</p>
                 </div>
                 <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
                   <ScaleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
@@ -264,8 +276,9 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400">Savings Rate</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-                    {totalIncome > 0 ? `${((netBalance / totalIncome) * 100).toFixed(1)}%` : 'N/A'}
+                    {savingsRate.toFixed(1)}%
                   </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Last 30 days</p>
                 </div>
                 <div className="bg-purple-100 dark:bg-purple-900 p-2 rounded-lg">
                   <BanknotesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
@@ -308,7 +321,7 @@ export default function DashboardPage() {
                       <div>
                         <p className="text-sm text-gray-600 dark:text-gray-300">Monthly Savings</p>
                         <p className="font-medium dark:text-white">
-                          {formatCurrency(netBalance / 12, user?.currency || 'USD')}
+                          {formatCurrency(monthlySavings, user?.currency || 'USD')}
                         </p>
                       </div>
                     </div>
@@ -320,6 +333,28 @@ export default function DashboardPage() {
                         <p className="text-sm text-gray-600 dark:text-gray-300">Monthly Expenses</p>
                         <p className="font-medium dark:text-white">
                           {formatCurrency(monthlyExpenses, user?.currency || 'USD')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div className="flex items-center space-x-3">
+                      <ArrowTrendingUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">30-Day Income</p>
+                        <p className="font-medium dark:text-white">
+                          {formatCurrency(recentIncome, user?.currency || 'USD')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div className="flex items-center space-x-3">
+                      <ArrowTrendingDownIcon className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">30-Day Expenses</p>
+                        <p className="font-medium dark:text-white">
+                          {formatCurrency(recentExpenses, user?.currency || 'USD')}
                         </p>
                       </div>
                     </div>
