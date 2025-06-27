@@ -29,7 +29,10 @@ import {
   ArrowTrendingUpIcon,
   CurrencyDollarIcon,
   ChartPieIcon,
-  ClockIcon
+  ClockIcon,
+  DocumentTextIcon,
+  CalendarIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 
 // Register Chart.js components
@@ -121,6 +124,42 @@ export default function LandingPage() {
       value: '89%',
       label: 'Better Budget Control',
       description: 'Users report improved spending awareness'
+    }
+  ];
+
+  const blogs = [
+    {
+      id: 1,
+      title: "Start Your Emergency Fund: A Gen Z Guide to Real Security",
+      excerpt: "Most Gen Z Filipinos live paycheck to paycheck — not because they&apos;re careless, but because no one taught them how to build financial security. Learn how to create an emergency fund starting with just ₱50.",
+      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      author: "FinSensei Team",
+      date: "March 15, 2024",
+      readTime: "5 min read",
+      category: "Emergency Fund",
+      slug: "emergency-fund-gen-z-guide"
+    },
+    {
+      id: 2,
+      title: "Maximize Your First Paycheck: Smart Moves for Young Professionals",
+      excerpt: "First job? First real paycheck? Don&apos;t blow it. Here&apos;s how to make it work for your future, not just for your cravings. Master the 50/30/20 rule and start building wealth from day one.",
+      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      author: "FinSensei Team",
+      date: "March 10, 2024",
+      readTime: "4 min read",
+      category: "Budgeting",
+      slug: "maximize-first-paycheck"
+    },
+    {
+      id: 3,
+      title: "Finfluencers vs. Real Financial Wisdom: What Gen Z Needs to Know",
+      excerpt: "TikTok told you to invest in crypto, skip Starbucks, and cash stuff like your life depends on it. Which ones are actually smart? Learn to filter noise from truth in the age of financial influencers.",
+      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80",
+      author: "FinSensei Team",
+      date: "March 5, 2024",
+      readTime: "6 min read",
+      category: "Financial Education",
+      slug: "finfluencers-vs-real-wisdom"
     }
   ];
 
@@ -456,6 +495,9 @@ export default function LandingPage() {
               <a href="#features" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
                 Features
               </a>
+              <a href="#blog" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
+                Blog
+              </a>
               <a href="#testimonials" className="text-gray-600 hover:text-blue-600 transition-colors font-medium">
                 Testimonials
               </a>
@@ -493,6 +535,9 @@ export default function LandingPage() {
             <div className="px-4 pt-4 pb-6 space-y-3">
               <a href="#features" className="block px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium">
                 Features
+              </a>
+              <a href="#blog" className="block px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium">
+                Blog
               </a>
               <a href="#testimonials" className="block px-4 py-3 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium">
                 Testimonials
@@ -828,6 +873,89 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section id="blog" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
+              <DocumentTextIcon className="h-4 w-4 mr-2" />
+              Financial Education
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Smart Money Moves for Gen Z
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Practical financial advice that actually works. No fluff, just real strategies to build wealth and achieve financial freedom.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {blogs.map((blog, index) => (
+              <article key={blog.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 hover:border-blue-200 overflow-hidden transform hover:-translate-y-2">
+                <div className="relative overflow-hidden">
+                  <Image
+                    src={blog.image}
+                    alt={blog.title}
+                    width={400}
+                    height={250}
+                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute top-4 left-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {blog.category}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <UserIcon className="h-4 w-4 mr-1" />
+                    <span className="mr-4">{blog.author}</span>
+                    <CalendarIcon className="h-4 w-4 mr-1" />
+                    <span className="mr-4">{blog.date}</span>
+                    <ClockIcon className="h-4 w-4 mr-1" />
+                    <span>{blog.readTime}</span>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {blog.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                    {blog.excerpt}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={`/blog/${blog.slug}`}
+                      className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium transition-colors group-hover:underline"
+                    >
+                      Read More
+                      <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm text-gray-500">Free</span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link
+              href="/blog"
+              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              View All Articles
+              <ArrowRightIcon className="ml-2 h-5 w-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-24 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
@@ -912,6 +1040,7 @@ export default function LandingPage() {
               <h3 className="font-bold text-gray-900 text-lg mb-6">Product</h3>
               <ul className="space-y-4 text-gray-600">
                 <li><a href="#features" className="hover:text-blue-600 transition-colors">Features</a></li>
+                <li><a href="#blog" className="hover:text-blue-600 transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-blue-600 transition-colors">Security</a></li>
               </ul>
             </div>
