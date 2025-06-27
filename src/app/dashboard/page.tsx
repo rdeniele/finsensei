@@ -3,29 +3,32 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import { supabase } from '@/lib/supabase';
 import { getAccounts, getTransactions } from '@/lib/db';
 import { getGoals } from '@/services/goalService';
+import { supabase } from '@/lib/supabase';
 import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import FinancialChart from '@/components/dashboard/FinancialChart';
-import DailyCoins from '@/components/DailyCoins';
+import FinancialMetrics from '@/components/dashboard/FinancialMetrics';
 import MiniAccountList from '@/components/dashboard/MiniAccountList';
 import MiniTransactionList from '@/components/dashboard/MiniTransactionList';
-import CoachButton from '@/components/FinancialCoach/CoachButton';
+import DailyCoins from '@/components/DailyCoins';
+import ChatModal from '@/components/FinancialCoach/ChatModal';
 import {
-  UserCircleIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ScaleIcon,
-  BanknotesIcon,
   ChartBarIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   FlagIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  ScaleIcon,
+  BanknotesIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import type { Account, Transaction, FinancialGoal } from '@/types/supabase';
+import type { FinancialGoal } from '@/types/supabase';
+import type { Account, Transaction } from '@/lib/api';
+import Link from 'next/link';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string): string {
@@ -52,6 +55,7 @@ export default function DashboardPage() {
   const [goals, setGoals] = useState<FinancialGoal[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showChatModal, setShowChatModal] = useState(false);
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -204,25 +208,22 @@ export default function DashboardPage() {
                   <p className="text-gray-600 dark:text-gray-400 text-sm">Here&apos;s your financial overview</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-4 text-white">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">👨‍💼</span>
-                    <div>
-                      <p className="font-medium">Coming Soon</p>
-                      <p className="text-sm text-blue-100">Talk with Professional Coach</p>
-                    </div>
+              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <Link href="/coins" className="block w-full sm:w-auto">
+                  <div className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 w-full">
+                    <span className="text-lg">💰</span>
+                    <span className="font-medium text-sm">Buy Coins</span>
                   </div>
-                </div>
-                <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg p-4 text-white">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">💰</span>
-                    <div>
-                      <p className="font-medium">Coming Soon</p>
-                      <p className="text-sm text-green-100">Earn Money with Taskr</p>
-                    </div>
+                </Link>
+                <button
+                  onClick={() => setShowChatModal(true)}
+                  className="block w-full sm:w-auto"
+                >
+                  <div className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 w-full">
+                    <span className="text-lg">🤖</span>
+                    <span className="font-medium text-sm">Chat with AI</span>
                   </div>
-                </div>
+                </button>
               </div>
             </div>
           </div>
@@ -446,12 +447,15 @@ export default function DashboardPage() {
             </div>
           </div>
         </main>
-
-        {/* Floating AI Button */}
-        <div className="fixed bottom-6 right-6 z-50">
-          <CoachButton accounts={accounts} transactions={transactions} />
-        </div>
       </div>
+      {showChatModal && (
+        <ChatModal
+          isOpen={showChatModal}
+          onClose={() => setShowChatModal(false)}
+          accounts={accounts}
+          transactions={transactions}
+        />
+      )}
     </ProtectedRoute>
   );
 }
