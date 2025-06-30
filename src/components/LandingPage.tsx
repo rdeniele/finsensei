@@ -572,7 +572,7 @@ export default function LandingPage() {
               Take Control of Your
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600"> Financial Future</span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-700 mb-12 max-w-4xl mx-auto leading-relaxed">
               FinSensei combines AI-powered insights with intuitive tools to help you track expenses, 
               set goals, and build wealth with confidence. Start your journey to financial freedom today.
             </p>
@@ -591,7 +591,7 @@ export default function LandingPage() {
                 Sign In
               </Link>
             </div>
-            <div className="mt-12 flex items-center justify-center space-x-8 text-sm text-gray-500">
+            <div className="mt-12 flex items-center justify-center space-x-8 text-sm text-gray-600">
               <div className="flex items-center">
                 <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2" />
                 No credit card required
@@ -649,7 +649,7 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Proven Results That Transform Your Finances
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
               See how FinSensei users have dramatically improved their financial health
             </p>
           </div>
@@ -668,7 +668,7 @@ export default function LandingPage() {
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">
                     {stat.label}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-gray-700 leading-relaxed">
                     {stat.description}
                   </p>
                 </div>
@@ -761,7 +761,7 @@ export default function LandingPage() {
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Visualize Your Financial Journey
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
               Interactive charts and insights that help you understand your money better
             </p>
           </div>
@@ -828,7 +828,7 @@ export default function LandingPage() {
           
           {/* Chart Counter */}
           <div className="text-center mt-4">
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               {currentChartIndex + 1} of {charts.length} charts
             </p>
           </div>
@@ -842,7 +842,7 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Loved by Thousands of Users
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
               See what our users are saying about their financial transformation with FinSensei
             </p>
           </div>
@@ -855,7 +855,7 @@ export default function LandingPage() {
                     <StarIcon key={i} className="h-6 w-6 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-600 mb-6 text-lg leading-relaxed italic">
+                <p className="text-gray-700 mb-6 text-lg leading-relaxed italic">
                   &quot;{testimonial.content}&quot;
                 </p>
                 <div className="flex items-center">
@@ -864,7 +864,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="font-bold text-gray-900 text-lg">{testimonial.name}</p>
-                    <p className="text-gray-500">{testimonial.role}</p>
+                    <p className="text-gray-600">{testimonial.role}</p>
                   </div>
                 </div>
               </div>
@@ -884,7 +884,7 @@ export default function LandingPage() {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Smart Money Moves for Gen Z
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
               Practical financial advice that actually works. No fluff, just real strategies to build wealth and achieve financial freedom.
             </p>
           </div>
@@ -908,7 +908,7 @@ export default function LandingPage() {
                 </div>
                 
                 <div className="p-6">
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <div className="flex items-center text-sm text-gray-600 mb-3">
                     <UserIcon className="h-4 w-4 mr-1" />
                     <span className="mr-4">{blog.author}</span>
                     <CalendarIcon className="h-4 w-4 mr-1" />
@@ -921,7 +921,7 @@ export default function LandingPage() {
                     {blog.title}
                   </h3>
                   
-                  <p className="text-gray-600 mb-4 leading-relaxed line-clamp-3">
+                  <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
                     {blog.excerpt}
                   </p>
                   
@@ -936,7 +936,7 @@ export default function LandingPage() {
                     
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-gray-500">Free</span>
+                      <span className="text-sm text-gray-600">Free</span>
                     </div>
                   </div>
                 </div>
@@ -963,7 +963,7 @@ export default function LandingPage() {
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 leading-tight">
             Ready to Transform Your Financial Life?
           </h2>
-          <p className="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-blue-50 mb-12 max-w-3xl mx-auto leading-relaxed">
             Join thousands of users who are already taking control of their finances with FinSensei. 
             Start your journey to financial freedom today.
           </p>
@@ -981,7 +981,7 @@ export default function LandingPage() {
               Sign In
             </Link>
           </div>
-          <div className="mt-12 flex items-center justify-center space-x-8 text-blue-100 text-sm">
+          <div className="mt-12 flex items-center justify-center space-x-8 text-blue-50 text-sm">
             <div className="flex items-center">
               <CheckCircleIcon className="h-5 w-5 mr-2" />
               No credit card required
