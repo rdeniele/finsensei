@@ -42,7 +42,6 @@ export async function middleware(req: NextRequest) {
 
     // Handle session refresh errors
     if (error) {
-      console.error('Session refresh error:', error);
       if (!isPublicRoute(req.nextUrl.pathname)) {
         return NextResponse.redirect(new URL('/auth/signin', req.url));
       }
@@ -85,7 +84,6 @@ export async function middleware(req: NextRequest) {
 
     return res;
   } catch (error) {
-    console.error('Middleware error:', error);
     if (!isPublicRoute(req.nextUrl.pathname)) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }

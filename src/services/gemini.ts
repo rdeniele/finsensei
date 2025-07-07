@@ -190,18 +190,15 @@ export async function fetchFinancialAdvice(financialData: FinancialData): Promis
         return true;
       });
     } catch (e) {
-      console.error('Error parsing Gemini response:', e);
       return [];
     }
   } catch (error) {
-    console.error('Error fetching financial advice:', error);
     return [];
   }
 }
 
 export async function sendChatMessage(messages: ChatMessage[], financialData: FinancialData): Promise<string> {
   if (!GEMINI_API_KEY) {
-    console.error('Gemini API key is not configured. Please set NEXT_PUBLIC_GEMINI_API_KEY in your .env.local file.');
     throw new Error('Gemini API key is not configured');
   }
 
@@ -234,7 +231,6 @@ export async function sendChatMessage(messages: ChatMessage[], financialData: Fi
     const response = await result.response;
     return response.text();
   } catch (error) {
-    console.error('Error in sendChatMessage:', error);
     if (error instanceof Error) {
       if (error.message.includes('API key')) {
         throw new Error('Gemini API key is not configured correctly. Please check your .env.local file.');

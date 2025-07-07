@@ -68,7 +68,6 @@ export default function Analytics() {
       });
     } catch (error) {
       setError('Failed to fetch analytics data');
-      console.error(error);
     } finally {
       setIsLoading(false);
     }

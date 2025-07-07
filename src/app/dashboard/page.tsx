@@ -81,7 +81,6 @@ export default function DashboardPage() {
       setTransactions(transactionsResult.data || []);
       setGoals(goalsData);
     } catch (error) {
-      console.error('Error fetching data:', error);
     }
   }, [user]);
 
@@ -117,7 +116,6 @@ export default function DashboardPage() {
         setProfile(data);
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
     }
   }, [user]);
 
@@ -132,7 +130,6 @@ export default function DashboardPage() {
     setIsLoading(true);
     Promise.all([fetchData(), fetchProfile()])
       .catch(error => {
-        console.error('Error loading dashboard data:', error);
       })
       .finally(() => {
         setIsLoading(false);
@@ -214,7 +211,7 @@ export default function DashboardPage() {
                   <h1 className="text-2xl font-bold dark:text-white">
                     Welcome back, {profile?.name || user?.email?.split('@')[0] || 'User'}
                   </h1>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">Here&apos;s your financial overview</p>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">Here&apos;s your financial overview</p>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
@@ -242,11 +239,11 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Income</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Total Income</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalIncome, user?.currency || 'USD')}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">All time</p>
                 </div>
                 <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
                   <ArrowUpIcon className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" />
@@ -256,11 +253,11 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Expenses</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Total Expenses</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(totalExpenses, user?.currency || 'USD')}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">All time</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">All time</p>
                 </div>
                 <div className="bg-red-100 dark:bg-red-900 p-2 rounded-lg">
                   <ArrowDownIcon className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400" />
@@ -270,11 +267,11 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Current Balance</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Current Balance</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {formatCurrency(netBalance, user?.currency || 'USD')}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Across all accounts</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Across all accounts</p>
                 </div>
                 <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
                   <ScaleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" />
@@ -284,11 +281,11 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Savings Rate</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Savings Rate</p>
                   <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                     {savingsRate.toFixed(1)}%
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Last 30 days</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Last 30 days</p>
                 </div>
                 <div className="bg-purple-100 dark:bg-purple-900 p-2 rounded-lg">
                   <BanknotesIcon className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" />
@@ -406,7 +403,7 @@ export default function DashboardPage() {
                               <h3 className="font-medium text-gray-900 dark:text-white">
                                 {goal.name}
                               </h3>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                              <p className="text-sm text-gray-500 dark:text-gray-300">
                                 {account?.account_name || 'Unknown Account'}
                               </p>
                             </div>
@@ -420,7 +417,7 @@ export default function DashboardPage() {
                               style={{ width: `${Math.min(progress, 100)}%` }}
                             ></div>
                           </div>
-                          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+                          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-300">
                             <span>{progress.toFixed(1)}% Complete</span>
                             <span>Target: {new Date(goal.target_date).toLocaleDateString()}</span>
                           </div>
@@ -430,7 +427,7 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <div className="text-center py-4">
-                    <p className="text-gray-500 dark:text-gray-400 mb-3">No active goals yet</p>
+                    <p className="text-gray-500 dark:text-gray-300 mb-3">No active goals yet</p>
                     <button
                       onClick={() => router.push('/goals')}
                       className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -452,31 +449,31 @@ export default function DashboardPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => router.push('/accounts')}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/70 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors group"
                   >
-                    <CreditCardIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    <span className="text-sm font-medium dark:text-white">Add Account</span>
+                    <CreditCardIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">View Accounts</span>
                   </button>
                   <button
                     onClick={() => router.push('/transactions')}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/70 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors group"
                   >
-                    <DocumentTextIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    <span className="text-sm font-medium dark:text-white">Add Transaction</span>
+                    <DocumentTextIcon className="w-5 h-5 text-green-600 dark:text-green-400 group-hover:text-green-700 dark:group-hover:text-green-300" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">View Transactions</span>
                   </button>
                   <button
                     onClick={() => router.push('/goals')}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/70 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors group"
                   >
-                    <FlagIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                    <span className="text-sm font-medium dark:text-white">Create Goal</span>
+                    <FlagIcon className="w-5 h-5 text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">View Goals</span>
                   </button>
                   <button
                     onClick={() => setShowChatModal(true)}
-                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                    className="flex items-center space-x-3 p-4 bg-gray-50 dark:bg-gray-700/70 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors group"
                   >
-                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                    <span className="text-sm font-medium dark:text-white">Ask Coach</span>
+                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-purple-600 dark:text-purple-400 group-hover:text-purple-700 dark:group-hover:text-purple-300" />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Ask Coach</span>
                   </button>
                 </div>
               </div>

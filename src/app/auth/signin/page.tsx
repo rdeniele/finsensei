@@ -43,7 +43,6 @@ export default function SignInPage() {
         }
       }
     } catch (err: any) {
-      console.error('Sign in error:', err);
       setError(err.message || 'Failed to sign in. Please try again.');
     } finally {
       setIsSubmitting(false);

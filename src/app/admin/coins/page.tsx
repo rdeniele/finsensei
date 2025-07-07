@@ -46,7 +46,6 @@ export default function AdminCoinsPage() {
       setPurchases(purchasesData || []);
       setTransactions(transactionsData || []);
     } catch (error) {
-      console.error('Error loading coin data:', error);
       setError('Failed to fetch data. Please check your admin permissions.');
     } finally {
       setLoading(false);
@@ -64,7 +63,6 @@ export default function AdminCoinsPage() {
         setError('Failed to complete purchase');
       }
     } catch (error) {
-      console.error('Error completing purchase:', error);
       setError('Failed to complete purchase');
     }
   };
@@ -78,7 +76,6 @@ export default function AdminCoinsPage() {
       setSelectedPurchase(null);
       setAdminNotes('');
     } catch (error) {
-      console.error('Error updating status:', error);
       setError('Failed to update status');
     } finally {
       setUpdating(null);
@@ -94,7 +91,6 @@ export default function AdminCoinsPage() {
       // Show success message
       alert(`Successfully refreshed daily coins for ${count} users!`);
     } catch (error) {
-      console.error('Error refreshing daily coins:', error);
       setError('Error refreshing daily coins. Please try again.');
     } finally {
       setRefreshing(false);
@@ -135,7 +131,6 @@ export default function AdminCoinsPage() {
         }
       }
     } catch (error) {
-      console.error('Error creating test purchase:', error);
       alert('Error creating test purchase. Check console for details.');
     }
   };

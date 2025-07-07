@@ -44,11 +44,11 @@ export default function MiniAccountList({ accounts }: MiniAccountListProps) {
           <div
             key={account.id}
             onClick={handleAccountClick}
-            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
           >
             <div>
               <h3 className="font-medium text-sm dark:text-white">{account.account_name}</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-300">
                 Last updated: {new Date(account.updated_at).toLocaleDateString()}
               </p>
             </div>

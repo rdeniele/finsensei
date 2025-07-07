@@ -32,7 +32,6 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error creating account:', error);
       setError(error instanceof Error ? error.message : 'Failed to create account');
     } finally {
       setLoading(false);
@@ -77,7 +76,7 @@ export default function AddAccountModal({ isOpen, onClose, onSuccess }: AddAccou
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30"
           >
             Cancel
           </button>

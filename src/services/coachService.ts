@@ -33,7 +33,6 @@ export async function getFinancialAdvice(accounts: Account[], transactions: Tran
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
-    console.error('Error getting financial advice:', error);
     throw new Error('Failed to get financial advice');
   }
 }
@@ -60,7 +59,6 @@ export async function getChatResponse(messages: { role: 'user' | 'assistant'; co
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
-    console.error('Error getting chat response:', error);
     throw new Error('Failed to get chat response');
   }
 }
@@ -85,7 +83,6 @@ export async function getTransactionInsights(transactions: Transaction[], curren
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
-    console.error('Error getting transaction insights:', error);
     throw new Error('Failed to get transaction insights');
   }
 }
@@ -112,7 +109,6 @@ export async function getAccountInsights(accounts: Account[], transactions: Tran
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
-    console.error('Error getting account insights:', error);
     throw new Error('Failed to get account insights');
   }
 }
@@ -139,7 +135,6 @@ export async function getBudgetRecommendations(accounts: Account[], transactions
     };
     return await fetchFinancialAdvice(financialData);
   } catch (error) {
-    console.error('Error getting budget recommendations:', error);
     throw new Error('Failed to get budget recommendations');
   }
 }

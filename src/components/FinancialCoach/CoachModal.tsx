@@ -22,7 +22,6 @@ const CoachModal: React.FC<CoachModalProps> = ({ isOpen, onClose, onGetAdvice })
       const response = await onGetAdvice();
       setAdvice(response);
     } catch (error) {
-      console.error('Error getting advice:', error);
       setError(error instanceof Error ? error.message : 'Sorry, I encountered an error while getting advice. Please try again later.');
     } finally {
       setLoading(false);
@@ -68,7 +67,7 @@ const CoachModal: React.FC<CoachModalProps> = ({ isOpen, onClose, onGetAdvice })
           </button>
           <button
             onClick={onClose}
-            className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md hover:bg-blue-300 dark:hover:bg-blue-800/50 transition-colors"
           >
             Close
           </button>

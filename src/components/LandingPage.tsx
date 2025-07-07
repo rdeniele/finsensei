@@ -791,7 +791,7 @@ export default function LandingPage() {
             {/* Navigation Buttons */}
             <button
               onClick={prevChart}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-700 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
               aria-label="Previous chart"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -801,7 +801,7 @@ export default function LandingPage() {
             
             <button
               onClick={nextChart}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-700 p-3 rounded-full shadow-lg border border-gray-200 transition-colors"
               aria-label="Next chart"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -819,7 +819,7 @@ export default function LandingPage() {
                 className={`w-3 h-3 rounded-full transition-colors ${
                   index === currentChartIndex 
                     ? 'bg-blue-600' 
-                    : 'bg-gray-300 hover:bg-gray-400'
+                    : 'bg-gray-300 hover:bg-blue-400'
                 }`}
                 aria-label={`Go to chart ${index + 1}`}
               />
@@ -970,7 +970,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
               href="/auth/signup"
-              className="bg-white text-blue-600 hover:bg-gray-100 px-12 py-5 rounded-2xl text-xl font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105"
+              className="bg-white text-blue-600 hover:bg-blue-50 px-12 py-5 rounded-2xl text-xl font-bold transition-all duration-300 shadow-2xl hover:shadow-3xl transform hover:scale-105"
             >
               Get Started Free
             </Link>

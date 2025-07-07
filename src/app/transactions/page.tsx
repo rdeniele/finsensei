@@ -11,6 +11,8 @@ import { getTransactions, createTransaction, updateTransaction, deleteTransactio
 import type { Transaction, Account } from '@/types/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import AddTransactionModal from '@/components/transactions/AddTransactionModal';
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 // Helper function to format currency
 function formatCurrency(amount: number, currency: string = 'USD'): string {
@@ -50,7 +52,6 @@ export default function TransactionsPage() {
       setAccounts(accountsData || []);
       setTransactions(transactionsData.data || []);
     } catch (error) {
-      console.error('Error fetching data:', error);
       setError(error instanceof Error ? error.message : 'Failed to fetch data');
     } finally {
       setIsLoading(false);
@@ -84,7 +85,6 @@ export default function TransactionsPage() {
       if (error) throw error;
       fetchData();
     } catch (error) {
-      console.error('Error deleting transaction:', error);
       setError('Failed to delete transaction');
     }
   };
@@ -105,9 +105,20 @@ export default function TransactionsPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Navbar />
           <main className="container mx-auto px-4 py-8">
-          <div className="mb-8">
+            {/* Back to Dashboard Button */}
+            <div className="mb-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                Back to Dashboard
+              </Link>
+            </div>
+            
+            <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
               Manage your financial transactions
             </p>
           </div>
@@ -127,7 +138,7 @@ export default function TransactionsPage() {
               {transactions.length === 0 ? (
                 <div className="text-center py-12">
                   <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white">No transactions</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                     Get started by creating a new transaction.
                   </p>
                   <div className="mt-6">

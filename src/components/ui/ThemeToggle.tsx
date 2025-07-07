@@ -39,21 +39,22 @@ export default function ThemeToggle() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        className="flex items-center space-x-1 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 shadow-sm"
         aria-label="Theme selector"
         aria-expanded={isOpen}
         aria-haspopup="true"
+        data-theme-toggle
       >
-        <CurrentIcon className="w-5 h-5 text-gray-800 dark:text-gray-200" />
+        <CurrentIcon className="w-5 h-5 text-gray-700 dark:text-gray-200" />
         <ChevronDownIcon 
-          className={`w-3 h-3 text-gray-600 dark:text-gray-400 transition-transform ${
+          className={`w-3 h-3 text-gray-500 dark:text-gray-300 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`} 
         />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-600 z-50 overflow-hidden">
           <div className="py-1">
             {themeOptions.map((option) => {
               const Icon = option.icon;
@@ -66,16 +67,21 @@ export default function ThemeToggle() {
                     setTheme(option.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center space-x-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  className={`w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                     isSelected 
-                      ? 'bg-blue-50 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400' 
-                      : 'text-gray-700 dark:text-gray-300'
+                      ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                      : 'text-gray-800 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-300'
                   }`}
+                  data-theme-button
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{option.label}</span>
+                  <Icon className={`w-4 h-4 ${
+                    isSelected 
+                      ? 'text-white' 
+                      : 'text-gray-600 dark:text-gray-300'
+                  }`} />
+                  <span className="flex-1 text-left font-medium">{option.label}</span>
                   {isSelected && (
-                    <div className="ml-auto w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full" />
+                    <div className="w-2 h-2 bg-white rounded-full shadow-sm" />
                   )}
                 </button>
               );
@@ -83,14 +89,14 @@ export default function ThemeToggle() {
           </div>
           
           {theme === 'system' && (
-            <div className="border-t border-gray-200 dark:border-gray-700 px-3 py-2">
-              <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+            <div className="border-t border-gray-200 dark:border-gray-600 px-4 py-3 bg-gray-50 dark:bg-gray-750">
+              <div className="flex items-center space-x-2 text-xs font-medium text-gray-700 dark:text-gray-200">
                 {effectiveTheme === 'dark' ? (
-                  <MoonIcon className="w-3 h-3" />
+                  <MoonIcon className="w-3 h-3 text-blue-500 dark:text-blue-400" />
                 ) : (
-                  <SunIcon className="w-3 h-3" />
+                  <SunIcon className="w-3 h-3 text-yellow-500 dark:text-yellow-400" />
                 )}
-                <span>Using {effectiveTheme}</span>
+                <span>Currently: {effectiveTheme} mode</span>
               </div>
             </div>
           )}

@@ -55,7 +55,7 @@ export default function MiniTransactionList({ transactions, accounts }: MiniTran
           <div
             key={transaction.id}
             onClick={handleTransactionClick}
-            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
           >
             <div className="flex items-center space-x-2">
               <span className="text-base dark:text-white">
@@ -63,7 +63,7 @@ export default function MiniTransactionList({ transactions, accounts }: MiniTran
               </span>
               <div>
                 <h3 className="font-medium text-sm dark:text-white">{transaction.source}</h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500 dark:text-gray-300">
                   {transaction.date} • {accounts.find(acc => acc.id === transaction.account_id)?.account_name || 'Unknown Account'}
                 </p>
               </div>

@@ -104,7 +104,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data || [];
       } catch (error) {
-        console.error('Error fetching accounts:', error);
         checkRateLimit(error);
         throw new Error('Failed to fetch accounts');
       }
@@ -134,7 +133,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data;
       } catch (error) {
-        console.error('Error creating account:', error);
         checkRateLimit(error);
         throw new Error(error instanceof Error ? error.message : 'Failed to create account');
       }
@@ -156,7 +154,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data;
       } catch (error) {
-        console.error('Error updating account:', error);
         checkRateLimit(error);
         throw new Error(error instanceof Error ? error.message : 'Failed to update account');
       }
@@ -175,7 +172,6 @@ export const api = {
 
         if (error) checkRateLimit(error);
       } catch (error) {
-        console.error('Error deleting account:', error);
         checkRateLimit(error);
         throw new Error('Failed to delete account');
       }
@@ -196,7 +192,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data || [];
       } catch (error) {
-        console.error('Error fetching transactions:', error);
         checkRateLimit(error);
         throw new Error('Failed to fetch transactions');
       }
@@ -221,7 +216,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data;
       } catch (error) {
-        console.error('Error creating transaction:', error);
         checkRateLimit(error);
         throw new Error(error instanceof Error ? error.message : 'Failed to create transaction');
       }
@@ -243,7 +237,6 @@ export const api = {
         if (error) checkRateLimit(error);
         return data;
       } catch (error) {
-        console.error('Error updating transaction:', error);
         checkRateLimit(error);
         throw new Error(error instanceof Error ? error.message : 'Failed to update transaction');
       }
@@ -262,7 +255,6 @@ export const api = {
 
         if (error) checkRateLimit(error);
       } catch (error) {
-        console.error('Error deleting transaction:', error);
         checkRateLimit(error);
         throw new Error('Failed to delete transaction');
       }

@@ -29,7 +29,7 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
         <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-2">
           {formatCurrency(income, currency)}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           {income > 0 ? 'Your total income' : 'No income recorded'}
         </p>
       </Card>
@@ -38,7 +38,7 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
         <p className="text-2xl font-bold text-red-600 dark:text-red-400 mt-2">
           {formatCurrency(expenses, currency)}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           {expenses > 0 ? `${expenseRate.toFixed(1)}% of your income` : 'No expenses recorded'}
         </p>
       </Card>
@@ -49,7 +49,7 @@ export default function FinancialMetrics({ income, expenses, netBalance, currenc
         }`}>
           {formatCurrency(netBalance, currency)}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
           {netBalance >= 0 
             ? `Your current account balance`
             : 'Your account balance is negative'}

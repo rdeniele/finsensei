@@ -59,7 +59,6 @@ export default function Settings() {
         setSettings(data);
       }
     } catch (error: any) {
-      console.error('Error fetching settings:', error);
       setError(error.message || 'Failed to fetch settings');
     } finally {
       setIsLoading(false);
@@ -84,7 +83,6 @@ export default function Settings() {
       setSettings(prev => ({ ...prev, ...newSettings }));
       setSuccess('Settings updated successfully');
     } catch (error: any) {
-      console.error('Error updating settings:', error);
       setError(error.message || 'Failed to update settings');
     }
   };

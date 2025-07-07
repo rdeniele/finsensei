@@ -45,7 +45,6 @@ class FinancialTransactionService implements TransactionService {
 
       return { data: result.data, error: null };
     } catch (error) {
-      console.error('TransactionService.createTransaction error:', error);
       return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
   }
@@ -76,7 +75,6 @@ class FinancialTransactionService implements TransactionService {
 
       return { data: result.data, error: null };
     } catch (error) {
-      console.error('TransactionService.updateTransaction error:', error);
       return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
   }
@@ -94,7 +92,6 @@ class FinancialTransactionService implements TransactionService {
 
       return { error: null };
     } catch (error) {
-      console.error('TransactionService.deleteTransaction error:', error);
       return { error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
   }
@@ -112,7 +109,6 @@ class FinancialTransactionService implements TransactionService {
 
       return { data: result.data, error: null };
     } catch (error) {
-      console.error('TransactionService.getTransactions error:', error);
       return { data: null, error: error instanceof Error ? error.message : 'Unknown error occurred' };
     }
   }
@@ -125,7 +121,6 @@ class FinancialTransactionService implements TransactionService {
         errors: validation.errors.map(e => e.message)
       };
     } catch (error) {
-      console.error('TransactionService.validateTransaction error:', error);
       return {
         isValid: false,
         errors: ['Validation failed due to an unexpected error']

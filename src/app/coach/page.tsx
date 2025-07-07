@@ -9,6 +9,8 @@ import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import { api } from '@/lib/api';
 import { getFinancialAdvice } from '@/services/coachService';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import Link from 'next/link';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import type { Account } from '@/lib/supabase';
 import type { Transaction } from '@/lib/supabase';
 import type { LearningTip } from '@/services/gemini';
@@ -35,7 +37,6 @@ export default function CoachPage() {
       setAccounts(accountsData);
       setTransactions(transactionsData);
     } catch (error) {
-      console.error('Error fetching data:', error);
       setError('Failed to fetch data');
     } finally {
       setLoading(false);
@@ -48,7 +49,6 @@ export default function CoachPage() {
       const advice = await getFinancialAdvice(accounts, transactions, user?.currency || 'USD');
       setAdvice(advice);
     } catch (error) {
-      console.error('Error getting financial advice:', error);
       setError('Failed to get financial advice');
     } finally {
       setLoading(false);
@@ -71,7 +71,18 @@ export default function CoachPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Navbar />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-center mb-6">
+            {/* Back to Dashboard Button */}
+            <div className="mb-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                Back to Dashboard
+              </Link>
+            </div>
+            
+            <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Financial Coach</h1>
             <button
               onClick={handleGetAdvice}
@@ -91,7 +102,7 @@ export default function CoachPage() {
                 <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                   <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">{tip.title}</h2>
                   <p className="text-gray-700 dark:text-gray-300 mb-4">{tip.content}</p>
-                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-300">
                     <span>Source: {tip.source}</span>
                     {tip.type === 'video' && tip.url && (
                       <a 

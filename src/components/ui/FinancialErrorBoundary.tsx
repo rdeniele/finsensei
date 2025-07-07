@@ -96,7 +96,7 @@ const DefaultFinancialErrorFallback: React.FC<{ error: Error; feature?: string; 
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               {feature ? `${feature.charAt(0).toUpperCase() + feature.slice(1)} Error` : 'Something went wrong!'}
             </h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
               {getErrorMessage()}
             </p>
             
@@ -111,7 +111,7 @@ const DefaultFinancialErrorFallback: React.FC<{ error: Error; feature?: string; 
               
               <button
                 onClick={() => router.push('/dashboard')}
-                className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 <HomeIcon className="w-4 h-4 mr-2" />
                 Go to Dashboard

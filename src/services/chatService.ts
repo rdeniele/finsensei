@@ -18,7 +18,6 @@ export async function saveChatMessage(userId: string, role: 'user' | 'assistant'
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error saving chat message:', error);
     return null;
   }
 }
@@ -35,7 +34,6 @@ export async function getChatHistory(userId: string, limit: number = 50): Promis
     if (error) throw error;
     return data || [];
   } catch (error) {
-    console.error('Error fetching chat history:', error);
     return [];
   }
 }
@@ -50,7 +48,6 @@ export async function clearChatHistory(userId: string): Promise<boolean> {
     if (error) throw error;
     return true;
   } catch (error) {
-    console.error('Error clearing chat history:', error);
     return false;
   }
 } 

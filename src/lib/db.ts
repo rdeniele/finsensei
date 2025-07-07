@@ -1,18 +1,6 @@
 import type { Account, Transaction } from './supabase';
 import { supabase } from './supabase';
 
-// Test database connection
-export async function testConnection() {
-  try {
-    const { data, error } = await supabase.from('accounts').select('count').limit(1);
-    console.log('Database connection test:', { data, error });
-    return { success: !error, error };
-  } catch (error) {
-    console.error('Database connection error:', error);
-    return { success: false, error };
-  }
-}
-
 // Verify connection
 async function verifyConnection() {
   try {
@@ -20,7 +8,6 @@ async function verifyConnection() {
     if (error) throw error;
     return true;
   } catch (error) {
-    console.error('Database connection error:', error);
     return false;
   }
 }
@@ -35,13 +22,11 @@ export async function getAccounts(userId: string): Promise<Account[]> {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Supabase error fetching accounts:', error);
       throw error;
     }
 
     return data || [];
   } catch (error) {
-    console.error('Error fetching accounts:', error);
     throw error;
   }
 }
@@ -54,8 +39,6 @@ export async function createAccount(
   currency: string = 'USD'
 ): Promise<Account> {
   try {
-    console.log('createAccount called with:', { userId, accountName, balance, accountType, currency });
-    
     // First, try to create with all columns
     let insertData: any = {
       user_id: userId,
@@ -68,7 +51,7 @@ export async function createAccount(
       insertData.account_type = accountType;
       insertData.currency = currency;
     } catch (e) {
-      console.warn('New columns might not exist yet, creating with basic fields only');
+      // New columns might not exist yet, creating with basic fields only
     }
     
     const { data, error } = await supabase
@@ -78,11 +61,8 @@ export async function createAccount(
       .single();
 
     if (error) {
-      console.error('Supabase error creating account:', error);
-      
       // If the error is about missing columns, try again without them
       if (error.message.includes('column') && (insertData.account_type || insertData.currency)) {
-        console.log('Retrying without new columns...');
         const { data: retryData, error: retryError } = await supabase
           .from('accounts')
           .insert([{
@@ -101,7 +81,6 @@ export async function createAccount(
           throw new Error('No data returned from account creation');
         }
         
-        console.log('Account created successfully (basic):', retryData);
         return retryData;
       }
       
@@ -112,10 +91,8 @@ export async function createAccount(
       throw new Error('No data returned from account creation');
     }
 
-    console.log('Account created successfully:', data);
     return data;
   } catch (error) {
-    console.error('Error creating account:', error);
     throw error;
   }
 }
@@ -132,7 +109,6 @@ export async function updateAccount(accountId: string, updates: Partial<Account>
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error updating account:', error);
     return { data: null, error };
   }
 }
@@ -147,7 +123,6 @@ export async function deleteAccount(accountId: string) {
     if (error) throw error;
     return { error: null };
   } catch (error) {
-    console.error('Error deleting account:', error);
     return { error };
   }
 }
@@ -164,15 +139,12 @@ export async function getTransactions(userId: string) {
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
-    console.error('Error fetching transactions:', error);
     return { data: null, error };
   }
 }
 
 export async function createTransaction(userId: string, transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) {
   try {
-    console.log('Creating transaction:', transaction);
-    
     // Validate required fields
     if (!transaction.account_id || !transaction.amount || !transaction.transaction_type) {
       throw new Error('Missing required transaction fields');
@@ -290,10 +262,8 @@ export async function createTransaction(userId: string, transaction: Omit<Transa
       }
     }
 
-    console.log('Transaction created successfully:', newTransaction);
     return { data: newTransaction, error: null };
   } catch (error) {
-    console.error('Error creating transaction:', error);
     return { data: null, error: error instanceof Error ? error : new Error('Unknown error') };
   }
 }
@@ -359,7 +329,6 @@ export async function updateTransaction(transactionId: string, userId: string, u
 
     return { data: updatedTransaction, error: null };
   } catch (error) {
-    console.error('Error updating transaction:', error);
     return { data: null, error };
   }
 }
@@ -406,7 +375,6 @@ export async function deleteTransaction(transactionId: string, userId: string) {
 
     return { error: null };
   } catch (error) {
-    console.error('Error deleting transaction:', error);
     return { error };
   }
 }

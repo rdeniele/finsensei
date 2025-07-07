@@ -2,17 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
-import { getAccounts, createAccount, updateAccount, deleteAccount, testConnection } from '@/lib/db';
+import { getAccounts, createAccount, updateAccount, deleteAccount } from '@/lib/db';
 import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import AddAccountModal from '@/components/accounts/AddAccountModal';
+import Link from 'next/link';
 import {
   PlusIcon,
   WalletIcon,
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
+  ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 import type { Account } from '@/types/supabase';
 
@@ -133,7 +135,6 @@ export default function AccountsPage() {
       const data = await getAccounts(user.id);
       setAccounts(data || []);
     } catch (error) {
-      console.error('Error fetching accounts:', error);
       setError(error instanceof Error ? error.message : 'Failed to load accounts');
     } finally {
       setLoading(false);
@@ -147,8 +148,6 @@ export default function AccountsPage() {
   const handleCreateAccount = async (data: { account_name: string; balance: string }) => {
     try {
       setError(null);
-      console.log('Creating account with data:', data);
-      console.log('User object:', user);
       
       if (!user) {
         throw new Error('User not authenticated');
@@ -167,14 +166,6 @@ export default function AccountsPage() {
         throw new Error('Invalid balance amount');
       }
       
-      console.log('Calling createAccount with:', {
-        userId: user.id,
-        accountName: data.account_name,
-        balance: balance,
-        accountType: 'checking',
-        currency: user.currency || 'USD'
-      });
-      
       await createAccount(
         user.id, 
         data.account_name, 
@@ -183,11 +174,9 @@ export default function AccountsPage() {
         user.currency || 'USD' // use user's currency or default to USD
       );
       
-      console.log('Account created successfully');
       await fetchAccounts();
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error creating account:', error);
       setError(error instanceof Error ? error.message : 'Failed to create account');
     }
   };
@@ -205,7 +194,6 @@ export default function AccountsPage() {
       setSelectedAccount(null);
       setIsModalOpen(false);
     } catch (error) {
-      console.error('Error updating account:', error);
       setError(error instanceof Error ? error.message : 'Failed to update account');
     }
   };
@@ -216,22 +204,7 @@ export default function AccountsPage() {
       await deleteAccount(accountId);
       await fetchAccounts();
     } catch (error) {
-      console.error('Error deleting account:', error);
       setError(error instanceof Error ? error.message : 'Failed to delete account');
-    }
-  };
-
-  const handleTestConnection = async () => {
-    try {
-      const result = await testConnection();
-      console.log('Connection test result:', result);
-      const errorMessage = result.error && typeof result.error === 'object' && 'message' in result.error 
-        ? (result.error as any).message 
-        : 'Unknown error';
-      setError(result.success ? 'Database connection successful!' : `Connection failed: ${errorMessage}`);
-    } catch (error) {
-      console.error('Connection test error:', error);
-      setError('Connection test failed');
     }
   };
 
@@ -250,7 +223,7 @@ export default function AccountsPage() {
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400">Please sign in to view your accounts.</p>
+            <p className="text-gray-600 dark:text-gray-300">Please sign in to view your accounts.</p>
           </div>
         </div>
       </ProtectedRoute>
@@ -263,15 +236,20 @@ export default function AccountsPage() {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Navbar />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-center mb-6">
+            {/* Back to Dashboard Button */}
+            <div className="mb-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                Back to Dashboard
+              </Link>
+            </div>
+            
+            <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
             <div className="flex space-x-2">
-              <button
-                onClick={handleTestConnection}
-                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-              >
-                Test DB
-              </button>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -290,7 +268,7 @@ export default function AccountsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {accounts.length === 0 ? (
               <div className="col-span-full text-center py-12">
-                <div className="text-gray-500 dark:text-gray-400">
+                <div className="text-gray-500 dark:text-gray-300">
                   <WalletIcon className="mx-auto h-12 w-12 mb-4" />
                   <h3 className="text-lg font-medium mb-2">No accounts yet</h3>
                   <p className="text-sm">Get started by adding your first account</p>
@@ -307,14 +285,14 @@ export default function AccountsPage() {
                       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {account.account_name}
                       </h2>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm text-gray-500 dark:text-gray-300">
                         {account.account_type || 'General'}
                       </p>
                     </div>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => setSelectedAccount(account)}
-                        className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                        className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
                       >
                         Edit
                       </button>

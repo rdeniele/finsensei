@@ -7,6 +7,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ThemeDemo from '@/components/ui/ThemeDemo';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Navbar from '@/components/ui/Navbar';
+import Link from 'next/link';
 import {
   UserCircleIcon,
   BellIcon,
@@ -81,7 +82,6 @@ function ProfileContent() {
           setName(data.name);
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
         setError('Failed to fetch profile');
       } finally {
         setIsLoading(false);
@@ -117,7 +117,6 @@ function ProfileContent() {
         router.push('/admin/users');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
       setError('Failed to update profile');
     } finally {
       setIsSaving(false);
@@ -137,11 +136,24 @@ function ProfileContent() {
       <Navbar />
       <main className="pt-16">
         <div className="max-w-7xl mx-auto p-8">
+          {/* Back to Dashboard Button */}
+          {!userId && (
+            <div className="mb-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <ArrowLeftIcon className="w-5 h-5 mr-2" />
+                Back to Dashboard
+              </Link>
+            </div>
+          )}
+          
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Settings
             </h1>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
               Manage your account settings and preferences
             </p>
           </div>
@@ -149,7 +161,7 @@ function ProfileContent() {
           {userId && (
             <button
               onClick={() => router.push('/admin/users')}
-              className="mb-6 flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              className="mb-6 flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
             >
               <ArrowLeftIcon className="w-5 h-5 mr-2" />
               Back to Users
@@ -191,7 +203,7 @@ function ProfileContent() {
                       placeholder="Enter your display name"
                       required
                     />
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
                       This name will be displayed across the application
                     </p>
                   </div>
@@ -213,7 +225,7 @@ function ProfileContent() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="p-6">
                 <div className="flex items-center mb-6">
-                  <PaintBrushIcon className="h-6 w-6 text-gray-500 dark:text-gray-400 mr-3" />
+                  <PaintBrushIcon className="h-6 w-6 text-gray-500 dark:text-gray-300 mr-3" />
                   <h2 className="text-lg font-medium text-gray-900 dark:text-white">Theme Settings</h2>
                 </div>
                 <ThemeDemo />
@@ -224,10 +236,10 @@ function ProfileContent() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="p-6">
                 <div className="flex items-center mb-6">
-                  <BellIcon className="h-6 w-6 text-gray-500 dark:text-gray-400 mr-3" />
+                  <BellIcon className="h-6 w-6 text-gray-500 dark:text-gray-300 mr-3" />
                   <h2 className="text-lg font-medium text-gray-900 dark:text-white">Notification Settings</h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Coming soon: Configure your notification preferences
                 </p>
               </div>
@@ -237,10 +249,10 @@ function ProfileContent() {
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
               <div className="p-6">
                 <div className="flex items-center mb-6">
-                  <ShieldCheckIcon className="h-6 w-6 text-gray-500 dark:text-gray-400 mr-3" />
+                  <ShieldCheckIcon className="h-6 w-6 text-gray-500 dark:text-gray-300 mr-3" />
                   <h2 className="text-lg font-medium text-gray-900 dark:text-white">Security Settings</h2>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-500 dark:text-gray-300">
                   Coming soon: Manage your security preferences
                 </p>
               </div>

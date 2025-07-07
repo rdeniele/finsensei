@@ -30,7 +30,6 @@ export default function CoachButton({ accounts, transactions }: CoachButtonProps
       const balance = await coinService.getUserCoins(user?.id || '');
       setCoinBalance(balance);
     } catch (error) {
-      console.error('Error loading coin balance:', error);
     }
   };
 

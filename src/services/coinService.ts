@@ -18,7 +18,6 @@ export const coinService = {
         chats_remaining
       };
     } catch (error) {
-      console.error('Error getting user coins:', error);
       throw new Error('Failed to get coin balance');
     }
   },
@@ -52,7 +51,6 @@ export const coinService = {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error creating coin purchase:', error);
       throw new Error('Failed to create coin purchase');
     }
   },
@@ -69,7 +67,6 @@ export const coinService = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error getting user coin purchases:', error);
       throw new Error('Failed to get coin purchases');
     }
   },
@@ -86,7 +83,6 @@ export const coinService = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error getting user coin transactions:', error);
       throw new Error('Failed to get coin transactions');
     }
   },
@@ -100,7 +96,6 @@ export const coinService = {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error using coins for chat:', error);
       throw new Error('Failed to use coins for chat');
     }
   },
@@ -111,7 +106,6 @@ export const coinService = {
       const balance = await this.getUserCoins(userId);
       return balance.coins >= 20;
     } catch (error) {
-      console.error('Error checking coin balance:', error);
       return false;
     }
   },
@@ -128,7 +122,6 @@ export const coinService = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error getting pending coin purchases:', error);
       throw new Error('Failed to get pending coin purchases');
     }
   },
@@ -142,7 +135,6 @@ export const coinService = {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error completing coin purchase:', error);
       throw new Error('Failed to complete coin purchase');
     }
   },
@@ -173,7 +165,6 @@ export const coinService = {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error updating coin purchase status:', error);
       throw new Error('Failed to update coin purchase status');
     }
   },
@@ -189,7 +180,6 @@ export const coinService = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error getting all coin purchases:', error);
       return [];
     }
   },
@@ -205,7 +195,6 @@ export const coinService = {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error getting all coin transactions:', error);
       return [];
     }
   }
@@ -220,13 +209,11 @@ export const getDailyRefreshStatus = async (): Promise<DailyRefreshStatus | null
       .rpc('get_daily_refresh_status', { user_uuid: user.id });
 
     if (error) {
-      console.error('Error getting daily refresh status:', error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('Error getting daily refresh status:', error);
     return null;
   }
 };
@@ -240,13 +227,11 @@ export const refreshDailyCoins = async (): Promise<number | null> => {
       .rpc('check_and_refresh_daily_coins', { user_uuid: user.id });
 
     if (error) {
-      console.error('Error refreshing daily coins:', error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('Error refreshing daily coins:', error);
     return null;
   }
 };
@@ -257,13 +242,11 @@ export const refreshDailyCoinsForAllUsers = async (): Promise<number | null> => 
       .rpc('refresh_daily_coins_for_all_users');
 
     if (error) {
-      console.error('Error refreshing daily coins for all users:', error);
       return null;
     }
 
     return data;
   } catch (error) {
-    console.error('Error refreshing daily coins for all users:', error);
     return null;
   }
 }; 

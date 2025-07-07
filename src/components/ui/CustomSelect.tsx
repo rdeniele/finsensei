@@ -59,7 +59,7 @@ export default function CustomSelect({ label, value, onChange, options, error, c
                   className={({ active, selected }) =>
                     `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
                       active 
-                        ? 'bg-blue-50 dark:bg-gray-600 text-blue-900 dark:text-white' 
+                        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-200' 
                         : 'text-gray-900 dark:text-white'
                     }`
                   }

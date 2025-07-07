@@ -86,7 +86,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error('Error getting initial session:', sessionError);
           toast.error('Failed to initialize session');
           throw sessionError;
         }
@@ -108,7 +107,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (error) {
-        console.error('Error during auth initialization:', error);
         if (mounted.current) {
           setSession(null);
           setUser(null);
@@ -158,7 +156,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(data.user as User);
       return { error: null };
     } catch (error: any) {
-      console.error('Sign in error:', error);
       toast.error(error.message || 'Failed to sign in');
       return { error };
     } finally {
@@ -184,7 +181,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       toast.success('Please check your email to verify your account');
       return { error: null };
     } catch (error: any) {
-      console.error('Sign up error:', error);
       toast.error(error.message || 'Failed to sign up');
       return { error };
     } finally {
@@ -208,7 +204,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       router.replace('/');
     } catch (error: any) {
-      console.error('Error signing out:', error);
       toast.error('Failed to sign out');
       throw error;
     } finally {

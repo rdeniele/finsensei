@@ -6,7 +6,6 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables');
   toast.error('Configuration error. Please contact support.');
   throw new Error('Missing required environment variables for Supabase');
 }
@@ -48,7 +47,6 @@ export const auth = {
         authInitialized = true;
         resolve({ session, error: null });
       } catch (error: any) {
-        console.error('Auth initialization error:', error);
         resolve({
           session: null,
           error: {
@@ -76,7 +74,6 @@ export const auth = {
       if (error) throw error;
       return { data, error: null };
     } catch (error: any) {
-      console.error('Sign in error:', error);
       return {
         data: null,
         error: {
@@ -99,7 +96,6 @@ export const auth = {
       if (error) throw error;
       return { data, error: null };
     } catch (error: any) {
-      console.error('Sign up error:', error);
       return {
         data: null,
         error: {
@@ -123,7 +119,6 @@ export const auth = {
       authInitialized = false;
       return { error: null };
     } catch (error: any) {
-      console.error('Sign out error:', error);
       return {
         error: {
           message: error.message || 'Failed to sign out. Please try again.'
@@ -141,7 +136,6 @@ export const auth = {
       if (error) throw error;
       return { session, error: null };
     } catch (error: any) {
-      console.error('Get session error:', error);
       return {
         session: null,
         error: {

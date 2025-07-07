@@ -27,7 +27,6 @@ export default function DailyCoins() {
         setCanRefresh(status.can_refresh);
       }
     } catch (error) {
-      console.error('Error checking daily refresh status:', error);
     }
   };
 
@@ -50,7 +49,6 @@ export default function DailyCoins() {
         window.location.reload();
       }
     } catch (error) {
-      console.error('Error refreshing daily coins:', error);
       setError('Failed to claim daily coins. Please try again.');
     } finally {
       setIsRefreshing(false);

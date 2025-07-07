@@ -77,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
         setSession(null);
         setUser(null);
       } finally {

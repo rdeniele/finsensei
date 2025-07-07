@@ -66,7 +66,6 @@ export default function AdminUsersPage() {
       
       setUsers(usersWithAdminStatus);
     } catch (error) {
-      console.error('Error loading users:', error);
       setError('Failed to fetch users. Please check your admin permissions.');
     } finally {
       setLoading(false);
@@ -116,7 +115,6 @@ export default function AdminUsersPage() {
       setReason('');
       await loadUsers(); // Reload the data
     } catch (error) {
-      console.error('Error adding coins:', error);
       alert('Failed to add coins. Please try again.');
     } finally {
       setAddingCoins(null);
@@ -144,7 +142,6 @@ export default function AdminUsersPage() {
         )
       );
     } catch (error) {
-      console.error('Error updating admin status:', error);
       alert('Failed to update admin status. Please try again.');
     } finally {
       setUpdatingAdmin(null);
@@ -402,7 +399,7 @@ export default function AdminUsersPage() {
                   setCoinsToAdd('');
                   setReason('');
                 }}
-                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30"
               >
                 Cancel
               </button>

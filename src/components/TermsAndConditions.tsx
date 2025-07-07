@@ -193,7 +193,7 @@ export default function TermsAndConditions({ onAccept, onDecline, type }: TermsA
           <div className="flex space-x-3">
             <button
               onClick={onDecline}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30"
             >
               Decline
             </button>

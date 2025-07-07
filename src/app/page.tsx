@@ -19,7 +19,6 @@ export default function Home() {
           await router.push('/dashboard');
         }
       } catch (error) {
-        console.error('Navigation error:', error);
         setIsRedirecting(false);
       }
     };

@@ -13,7 +13,7 @@
   --input-bg: 255, 255, 255;
   --modal-bg: 255, 255, 255;
   --card-bg: 255, 255, 255;
-  --hover-bg: 243, 244, 246;
+  --hover-bg: 59, 130, 246; /* Blue hover for light mode */
 }
 
 .dark {
@@ -27,84 +27,54 @@
   --input-bg: 31, 41, 55;
   --modal-bg: 31, 41, 55;
   --card-bg: 31, 41, 55;
-  --hover-bg: 55, 65, 81;
+  --hover-bg: 29, 78, 216; /* Blue hover for dark mode */
 }
 
-* {
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+/* Enhanced dark mode contrast improvements */
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39;
+  --background-end-rgb: 17, 24, 39;
+  --text-primary: 255, 255, 255;
+  --text-secondary: 229, 231, 235;
+  --text-muted: 156, 163, 175;
+  --border-color: 55, 65, 81;
+  --input-bg: 31, 41, 55;
+  --modal-bg: 31, 41, 55;
+  --card-bg: 31, 41, 55;
+  --hover-bg: 29, 78, 216; /* Blue hover for dark mode */
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
-  font-family: Arial, Helvetica, sans-serif;
+/* Improved button and interactive element contrast */
+.dark .theme-dropdown-item {
+  background-color: rgb(31, 41, 55);
+  color: rgb(229, 231, 235);
 }
 
-/* Universal text color classes */
-.text-primary {
-  color: rgb(var(--text-primary)) !important;
-}
-
-.text-secondary {
-  color: rgb(var(--text-secondary)) !important;
-}
-
-.text-muted {
-  color: rgb(var(--text-muted)) !important;
-}
-
-/* Form elements */
-input, select, textarea {
-  background-color: rgb(var(--input-bg)) !important;
-  border-color: rgb(var(--border-color)) !important;
-  color: rgb(var(--text-primary)) !important;
-}
-
-input::placeholder, select::placeholder, textarea::placeholder {
-  color: rgb(var(--text-muted)) !important;
-}
-
-/* Modal styles */
-.modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-content {
-  background-color: rgb(var(--modal-bg));
-  border-color: rgb(var(--border-color));
-}
-
-/* Card styles */
-.card {
-  background-color: rgb(var(--card-bg));
-  border-color: rgb(var(--border-color));
-}
-
-/* Button styles */
-.btn-primary {
-  background-color: rgb(59, 130, 246);
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: rgb(37, 99, 235);
-}
-
-.dark .btn-primary {
-  background-color: rgb(37, 99, 235);
-}
-
-.dark .btn-primary:hover {
+.dark .theme-dropdown-item:hover {
   background-color: rgb(29, 78, 216);
+  color: rgb(255, 255, 255);
 }
 
-.btn-secondary {
-  background-color: rgb(var(--hover-bg));
-  color: rgb(var(--text-primary));
+.dark .theme-dropdown-item.selected {
+  background-color: rgb(59, 130, 246);
+  color: rgb(255, 255, 255);
 }
 
-.btn-secondary:hover {
-  background-color: rgb(var(--border-color));
+/* Improved form inputs in dark mode */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: rgb(31, 41, 55);
+  border-color: rgb(75, 85, 99);
+  color: rgb(255, 255, 255);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: rgb(59, 130, 246);
+  background-color: rgb(31, 41, 55);
 }
 
 /* Focus styles */
@@ -130,6 +100,15 @@ input::placeholder, select::placeholder, textarea::placeholder {
 .dark .text-gray-500,
 .dark .text-gray-400 {
   color: rgb(255, 255, 255) !important; /* White text for dark mode */
+}
+
+/* Enhanced text readability in dark mode */
+.dark .text-gray-400 {
+  color: rgb(156, 163, 175) !important;
+}
+
+.dark .text-gray-500 {
+  color: rgb(107, 114, 128) !important;
 }
 
 /* Headings */
@@ -236,4 +215,88 @@ p, span, div {
 
 .animate-fade-in {
   animation: fade-in 0.6s ease-out forwards;
+}
+
+/* Blue hover utilities for consistent interaction design */
+.hover-blue-light:hover {
+  background-color: rgb(239, 246, 255) !important; /* blue-50 */
+}
+
+.dark .hover-blue-light:hover {
+  background-color: rgba(29, 78, 216, 0.3) !important; /* blue-700 with opacity */
+}
+
+/* Standard blue hover for buttons and interactive elements */
+.hover-blue:hover {
+  background-color: rgb(59, 130, 246) !important; /* blue-500 */
+  color: rgb(255, 255, 255) !important;
+}
+
+.dark .hover-blue:hover {
+  background-color: rgb(37, 99, 235) !important; /* blue-600 */
+  color: rgb(255, 255, 255) !important;
+}
+
+/* Blue text hover */
+.hover-blue-text:hover {
+  color: rgb(59, 130, 246) !important; /* blue-500 */
+}
+
+.dark .hover-blue-text:hover {
+  color: rgb(147, 197, 253) !important; /* blue-300 */
+}
+
+/* Blue hover utilities for dropdowns and interactive elements */
+.dropdown-item-hover {
+  @apply hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors;
+}
+
+.dropdown-item-active {
+  @apply bg-blue-50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-200;
+}
+
+.interactive-hover {
+  @apply hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+}
+
+/* Ensure all select elements have proper blue hover in dark mode */
+.dark select option:hover,
+.dark [role="option"]:hover {
+  background-color: rgb(29, 78, 216, 0.3) !important;
+  color: rgb(191, 219, 254) !important;
+}
+
+/* Global dropdown and menu styling */
+.dark [role="menu"] [role="menuitem"]:hover,
+.dark [role="listbox"] [role="option"]:hover,
+.dark .dropdown-menu-item:hover {
+  background-color: rgb(29, 78, 216, 0.3) !important;
+  color: rgb(191, 219, 254) !important;
+}
+
+/* Enhanced theme toggle and dark mode button styling */
+.theme-toggle-button {
+  @apply bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600;
+  @apply hover:bg-blue-50 dark:hover:bg-blue-900/30;
+  @apply hover:border-blue-300 dark:hover:border-blue-600;
+  @apply transition-all duration-200;
+}
+
+.theme-dropdown-open {
+  @apply bg-blue-50 dark:bg-blue-900/30;
+  @apply border-blue-300 dark:border-blue-600;
+}
+
+/* Ensure theme buttons and dark mode toggle have consistent blue hover */
+.dark [data-theme-toggle],
+.dark [data-theme-button],
+.dark .theme-selector {
+  transition: all 0.2s ease;
+}
+
+.dark [data-theme-toggle]:hover,
+.dark [data-theme-button]:hover,
+.dark .theme-selector:hover {
+  background-color: rgb(29, 78, 216, 0.3) !important;
+  border-color: rgb(37, 99, 235) !important;
 }

@@ -36,7 +36,6 @@ export async function GET(_request: Request) {
 
     return NextResponse.json({ user });
   } catch (error) {
-    console.error('Error in auth route:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

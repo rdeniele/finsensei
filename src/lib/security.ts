@@ -51,7 +51,6 @@ export function withSecurity(
 
       return handler(req);
     } catch (error) {
-      console.error('Security middleware error:', error);
       return NextResponse.json(
         { error: 'Internal server error' },
         { status: 500 }

@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ response });
   } catch (error) {
-    console.error('Chat API error:', error);
     return NextResponse.json(
       { error: 'Failed to process chat message' },
       { status: 500 }

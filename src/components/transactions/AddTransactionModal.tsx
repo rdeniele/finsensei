@@ -24,14 +24,6 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Debug logging
-  useEffect(() => {
-    if (isOpen) {
-      console.log('AddTransactionModal - Accounts received:', accounts);
-      console.log('AddTransactionModal - Accounts length:', accounts?.length);
-    }
-  }, [isOpen, accounts]);
-
   useEffect(() => {
     if (isOpen) {
       // Reset form when modal opens
@@ -89,7 +81,6 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
       onSuccess();
       onClose();
     } catch (error: unknown) {
-      console.error('Error creating transaction:', error);
       setError(error instanceof Error ? error.message : 'Failed to create transaction. Please try again later.');
     } finally {
       setLoading(false);
@@ -118,7 +109,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30"
             >
               Cancel
             </button>
@@ -240,7 +231,7 @@ export default function AddTransactionModal({ isOpen, onClose, onSuccess, accoun
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/30"
           >
             Cancel
           </button>

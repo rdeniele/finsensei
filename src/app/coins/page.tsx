@@ -9,11 +9,13 @@ import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import TermsAndConditions from '@/components/TermsAndConditions';
+import Link from 'next/link';
 import {
   CheckIcon,
   StarIcon,
   SparklesIcon,
   CurrencyDollarIcon,
+  ArrowLeftIcon,
 } from '@heroicons/react/24/outline';
 
 export default function BuyCoinsPage() {
@@ -81,7 +83,6 @@ export default function BuyCoinsPage() {
 
       setShowConfirmation(true);
     } catch (error) {
-      console.error('Error creating coin purchase:', error);
       setError('Failed to submit purchase request. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -135,7 +136,7 @@ export default function BuyCoinsPage() {
                     setSelectedPlan(null);
                     setFormData({ name: '', email: '' });
                   }}
-                  className="w-full px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="w-full px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
                 >
                   Buy More Coins
                 </button>
@@ -152,6 +153,17 @@ export default function BuyCoinsPage() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Navbar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Back to Dashboard Button */}
+          <div className="mb-6">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 mr-2" />
+              Back to Dashboard
+            </Link>
+          </div>
+          
           <div className="text-center mb-12">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               Buy Coins
@@ -225,7 +237,7 @@ export default function BuyCoinsPage() {
                   className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
                     selectedPlan?.id === plan.id
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-blue-200 dark:hover:bg-blue-800/50'
                   }`}
                 >
                   {selectedPlan?.id === plan.id ? 'Selected' : 'Select Plan'}
