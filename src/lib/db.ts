@@ -1,6 +1,18 @@
 import type { Account, Transaction } from './supabase';
 import { supabase } from './supabase';
 
+// Test database connection
+export async function testConnection() {
+  try {
+    const { data, error } = await supabase.from('accounts').select('count').limit(1);
+    console.log('Database connection test:', { data, error });
+    return { success: !error, error };
+  } catch (error) {
+    console.error('Database connection error:', error);
+    return { success: false, error };
+  }
+}
+
 // Verify connection
 async function verifyConnection() {
   try {
@@ -42,25 +54,65 @@ export async function createAccount(
   currency: string = 'USD'
 ): Promise<Account> {
   try {
+    console.log('createAccount called with:', { userId, accountName, balance, accountType, currency });
+    
+    // First, try to create with all columns
+    let insertData: any = {
+      user_id: userId,
+      account_name: accountName,
+      balance: balance
+    };
+    
+    // Try to add the new columns if they exist
+    try {
+      insertData.account_type = accountType;
+      insertData.currency = currency;
+    } catch (e) {
+      console.warn('New columns might not exist yet, creating with basic fields only');
+    }
+    
     const { data, error } = await supabase
       .from('accounts')
-      .insert([
-        {
-          user_id: userId,
-          account_name: accountName,
-          balance: balance,
-          account_type: accountType,
-          currency: currency
-        }
-      ])
+      .insert([insertData])
       .select()
       .single();
 
     if (error) {
       console.error('Supabase error creating account:', error);
-      throw error;
+      
+      // If the error is about missing columns, try again without them
+      if (error.message.includes('column') && (insertData.account_type || insertData.currency)) {
+        console.log('Retrying without new columns...');
+        const { data: retryData, error: retryError } = await supabase
+          .from('accounts')
+          .insert([{
+            user_id: userId,
+            account_name: accountName,
+            balance: balance
+          }])
+          .select()
+          .single();
+          
+        if (retryError) {
+          throw new Error(`Database error: ${retryError.message}`);
+        }
+        
+        if (!retryData) {
+          throw new Error('No data returned from account creation');
+        }
+        
+        console.log('Account created successfully (basic):', retryData);
+        return retryData;
+      }
+      
+      throw new Error(`Database error: ${error.message}`);
     }
 
+    if (!data) {
+      throw new Error('No data returned from account creation');
+    }
+
+    console.log('Account created successfully:', data);
     return data;
   } catch (error) {
     console.error('Error creating account:', error);

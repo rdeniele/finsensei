@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
-import { getAccounts, createAccount, updateAccount, deleteAccount } from '@/lib/db';
+import { getAccounts, createAccount, updateAccount, deleteAccount, testConnection } from '@/lib/db';
 import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -147,16 +147,43 @@ export default function AccountsPage() {
   const handleCreateAccount = async (data: { account_name: string; balance: string }) => {
     try {
       setError(null);
+      console.log('Creating account with data:', data);
+      console.log('User object:', user);
+      
       if (!user) {
         throw new Error('User not authenticated');
       }
+      
+      if (!user.id) {
+        throw new Error('User ID is missing');
+      }
+      
+      if (!data.account_name.trim()) {
+        throw new Error('Account name is required');
+      }
+      
+      const balance = parseFloat(data.balance);
+      if (isNaN(balance)) {
+        throw new Error('Invalid balance amount');
+      }
+      
+      console.log('Calling createAccount with:', {
+        userId: user.id,
+        accountName: data.account_name,
+        balance: balance,
+        accountType: 'checking',
+        currency: user.currency || 'USD'
+      });
+      
       await createAccount(
         user.id, 
         data.account_name, 
-        parseFloat(data.balance),
+        balance,
         'checking', // default account type
         user.currency || 'USD' // use user's currency or default to USD
       );
+      
+      console.log('Account created successfully');
       await fetchAccounts();
       setIsModalOpen(false);
     } catch (error) {
@@ -194,6 +221,20 @@ export default function AccountsPage() {
     }
   };
 
+  const handleTestConnection = async () => {
+    try {
+      const result = await testConnection();
+      console.log('Connection test result:', result);
+      const errorMessage = result.error && typeof result.error === 'object' && 'message' in result.error 
+        ? (result.error as any).message 
+        : 'Unknown error';
+      setError(result.success ? 'Database connection successful!' : `Connection failed: ${errorMessage}`);
+    } catch (error) {
+      console.error('Connection test error:', error);
+      setError('Connection test failed');
+    }
+  };
+
   if (loading) {
     return (
       <ProtectedRoute>
@@ -224,12 +265,20 @@ export default function AccountsPage() {
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Accounts</h1>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              Add Account
-            </button>
+            <div className="flex space-x-2">
+              <button
+                onClick={handleTestConnection}
+                className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+              >
+                Test DB
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Add Account
+              </button>
+            </div>
           </div>
 
           {error && (
