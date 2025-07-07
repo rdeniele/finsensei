@@ -6,6 +6,7 @@ import Navbar from '@/components/ui/Navbar';
 import { Card } from '@/components/ui/Card';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import { getTransactions, createTransaction, updateTransaction, deleteTransaction, getAccounts } from '@/lib/db';
 import type { Transaction, Account } from '@/types/supabase';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -32,16 +33,25 @@ export default function TransactionsPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>();
 
   const fetchData = useCallback(async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+    
     try {
+      setError(null);
+      setIsLoading(true);
+      
       const [accountsData, transactionsData] = await Promise.all([
-        getAccounts(user!.id),
-        getTransactions(user!.id)
+        getAccounts(user.id),
+        getTransactions(user.id)
       ]);
+      
       setAccounts(accountsData || []);
       setTransactions(transactionsData.data || []);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Failed to fetch data');
+      setError(error instanceof Error ? error.message : 'Failed to fetch data');
     } finally {
       setIsLoading(false);
     }
@@ -91,9 +101,10 @@ export default function TransactionsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar />
-        <main className="container mx-auto px-4 py-8">
+      <FinancialErrorBoundary feature="transactions">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <Navbar />
+          <main className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Transactions</h1>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -259,6 +270,7 @@ export default function TransactionsPage() {
           />
         </main>
       </div>
-    </ProtectedRoute>
+    </FinancialErrorBoundary>
+  </ProtectedRoute>
   );
 }

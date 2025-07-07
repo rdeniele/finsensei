@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/ui/Navbar';
 import { useAuth } from '@/lib/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import { api } from '@/lib/api';
 import { getFinancialAdvice } from '@/services/coachService';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -66,9 +67,10 @@ export default function CoachPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FinancialErrorBoundary feature="chat">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <Navbar />
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Financial Coach</h1>
             <button
@@ -108,6 +110,7 @@ export default function CoachPage() {
           )}
         </main>
       </div>
-    </ProtectedRoute>
+    </FinancialErrorBoundary>
+  </ProtectedRoute>
   );
 }

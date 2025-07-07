@@ -171,81 +171,130 @@ export async function getTransactions(userId: string) {
 
 export async function createTransaction(userId: string, transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) {
   try {
-    // Start a transaction
-    const { data: newTransaction, error: transactionError } = await supabase
-      .from('transactions')
-      .insert([transaction])
-      .select()
-      .single();
-
-    if (transactionError) throw transactionError;
-
-    // Get current account balance
-    const { data: account, error: accountError } = await supabase
+    console.log('Creating transaction:', transaction);
+    
+    // Validate required fields
+    if (!transaction.account_id || !transaction.amount || !transaction.transaction_type) {
+      throw new Error('Missing required transaction fields');
+    }
+    
+    // Validate amount
+    if (transaction.amount <= 0) {
+      throw new Error('Transaction amount must be positive');
+    }
+    
+    // Get source account details
+    const { data: sourceAccount, error: sourceError } = await supabase
       .from('accounts')
-      .select('balance')
+      .select('balance, currency')
       .eq('id', transaction.account_id)
       .single();
 
-    if (accountError) throw accountError;
+    if (sourceError) {
+      throw new Error(`Failed to get source account: ${sourceError.message}`);
+    }
 
-    // Calculate new balance based on transaction type
-    let newBalance = Number(account.balance);
+    if (!sourceAccount) {
+      throw new Error('Source account not found');
+    }
+
+    let newSourceBalance = Number(sourceAccount.balance);
+    let destinationUpdates: { id: string; balance: number } | null = null;
+
+    // Calculate balance changes based on transaction type
     if (transaction.transaction_type === 'income') {
-      newBalance += transaction.amount;
+      newSourceBalance += transaction.amount;
     } else if (transaction.transaction_type === 'expense') {
-      if (newBalance < transaction.amount) {
-        throw new Error('Insufficient balance');
+      if (newSourceBalance < transaction.amount) {
+        throw new Error('Insufficient balance for this expense');
       }
-      newBalance -= transaction.amount;
+      newSourceBalance -= transaction.amount;
     } else if (transaction.transaction_type === 'transfer') {
       if (!transaction.to_account_id) {
-        throw new Error('Destination account is required for transfer');
+        throw new Error('Destination account is required for transfers');
       }
-      if (newBalance < transaction.amount) {
-        throw new Error('Insufficient balance for transfer');
+      
+      if (newSourceBalance < transaction.amount) {
+        throw new Error('Insufficient balance for this transfer');
       }
 
       // Get destination account
-      const { data: toAccount, error: toAccountError } = await supabase
+      const { data: destAccount, error: destError } = await supabase
         .from('accounts')
-        .select('balance')
+        .select('balance, currency')
         .eq('id', transaction.to_account_id)
         .single();
 
-      if (toAccountError) throw toAccountError;
+      if (destError) {
+        throw new Error(`Failed to get destination account: ${destError.message}`);
+      }
 
-      // Update source account balance
-      const { error: updateSourceError } = await supabase
-        .from('accounts')
-        .update({ balance: newBalance - transaction.amount })
-        .eq('id', transaction.account_id);
+      if (!destAccount) {
+        throw new Error('Destination account not found');
+      }
 
-      if (updateSourceError) throw updateSourceError;
-
-      // Update destination account balance
-      const { error: updateDestError } = await supabase
-        .from('accounts')
-        .update({ balance: Number(toAccount.balance) + transaction.amount })
-        .eq('id', transaction.to_account_id);
-
-      if (updateDestError) throw updateDestError;
-
-      return { data: newTransaction, error: null };
+      newSourceBalance -= transaction.amount;
+      destinationUpdates = {
+        id: transaction.to_account_id,
+        balance: Number(destAccount.balance) + transaction.amount
+      };
     }
 
-    // Update account balance for income/expense
-    const { error: updateError } = await supabase
+    // Create transaction record
+    const { data: newTransaction, error: transactionError } = await supabase
+      .from('transactions')
+      .insert([{
+        ...transaction,
+        user_id: userId
+      }])
+      .select()
+      .single();
+
+    if (transactionError) {
+      throw new Error(`Failed to create transaction: ${transactionError.message}`);
+    }
+
+    // Update source account balance
+    const { error: sourceUpdateError } = await supabase
       .from('accounts')
-      .update({ balance: newBalance })
+      .update({ balance: newSourceBalance })
       .eq('id', transaction.account_id);
 
-    if (updateError) throw updateError;
+    if (sourceUpdateError) {
+      // Rollback transaction if balance update fails
+      await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', newTransaction.id);
+      throw new Error(`Failed to update source account balance: ${sourceUpdateError.message}`);
+    }
 
+    // Update destination account balance for transfers
+    if (destinationUpdates) {
+      const { error: destUpdateError } = await supabase
+        .from('accounts')
+        .update({ balance: destinationUpdates.balance })
+        .eq('id', destinationUpdates.id);
+
+      if (destUpdateError) {
+        // Rollback transaction and source account update
+        await supabase
+          .from('transactions')
+          .delete()
+          .eq('id', newTransaction.id);
+        await supabase
+          .from('accounts')
+          .update({ balance: sourceAccount.balance })
+          .eq('id', transaction.account_id);
+        throw new Error(`Failed to update destination account balance: ${destUpdateError.message}`);
+      }
+    }
+
+    console.log('Transaction created successfully:', newTransaction);
     return { data: newTransaction, error: null };
   } catch (error) {
     console.error('Error creating transaction:', error);
-    return { data: null, error };
+    return { data: null, error: error instanceof Error ? error : new Error('Unknown error') };
   }
 }
 

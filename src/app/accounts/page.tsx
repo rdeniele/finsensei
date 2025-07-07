@@ -6,7 +6,7 @@ import { getAccounts, createAccount, updateAccount, deleteAccount, testConnectio
 import Navbar from '@/components/ui/Navbar';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import AddAccountModal from '@/components/accounts/AddAccountModal';
 import {
   PlusIcon,
@@ -258,7 +258,7 @@ export default function AccountsPage() {
   }
 
   return (
-    <ErrorBoundary>
+    <FinancialErrorBoundary feature="accounts">
       <ProtectedRoute>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Navbar />
@@ -347,6 +347,6 @@ export default function AccountsPage() {
         </main>
       </div>
     </ProtectedRoute>
-  </ErrorBoundary>
+  </FinancialErrorBoundary>
   );
 }

@@ -7,6 +7,7 @@ import { getGoals, createGoal, deleteGoal, addContribution, updateGoal } from '@
 import type { FinancialGoal } from '@/types/supabase';
 import Navbar from '@/components/ui/Navbar';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import AddGoalModal from '@/components/goals/AddGoalModal';
 import EditGoalModal from '@/components/goals/EditGoalModal';
 
@@ -131,9 +132,10 @@ export default function GoalsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
+      <FinancialErrorBoundary feature="goals">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <Navbar />
+          <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Financial Goals</h1>
           </div>
@@ -341,6 +343,7 @@ export default function GoalsPage() {
           )}
         </div>
       </div>
-    </ProtectedRoute>
+    </FinancialErrorBoundary>
+  </ProtectedRoute>
   );
 } 
