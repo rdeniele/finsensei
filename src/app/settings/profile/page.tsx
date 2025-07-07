@@ -4,12 +4,14 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ThemeDemo from '@/components/ui/ThemeDemo';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 import Navbar from '@/components/ui/Navbar';
 import {
   UserCircleIcon,
   BellIcon,
   ShieldCheckIcon,
+  PaintBrushIcon,
 } from '@heroicons/react/24/outline';
 
 interface Profile {
@@ -204,6 +206,17 @@ function ProfileContent() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+
+            {/* Theme Settings Section */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="p-6">
+                <div className="flex items-center mb-6">
+                  <PaintBrushIcon className="h-6 w-6 text-gray-500 dark:text-gray-400 mr-3" />
+                  <h2 className="text-lg font-medium text-gray-900 dark:text-white">Theme Settings</h2>
+                </div>
+                <ThemeDemo />
               </div>
             </div>
 
