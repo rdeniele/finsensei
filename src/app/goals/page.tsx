@@ -10,6 +10,7 @@ import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import FinancialErrorBoundary from '@/components/ui/FinancialErrorBoundary';
 import AddGoalModal from '@/components/goals/AddGoalModal';
 import EditGoalModal from '@/components/goals/EditGoalModal';
+import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 export default function GoalsPage() {
   const { user } = useAuth();
@@ -181,21 +182,21 @@ export default function GoalsPage() {
                           className="text-blue-500 hover:text-blue-700 p-1"
                           aria-label="Edit goal"
                         >
-                          ✏️
+                          <PencilIcon className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteGoal(goal.id)}
                           className="text-red-500 hover:text-red-700 p-1"
                           aria-label="Delete goal"
                         >
-                          🗑️
+                          <TrashIcon className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => setShowContributionModal(goal.id)}
                           className="text-green-500 hover:text-green-700 p-1"
                           aria-label="Add contribution"
                         >
-                          ➕
+                          <PlusIcon className="h-4 w-4" />
                         </button>
                       </div>
                     </div>

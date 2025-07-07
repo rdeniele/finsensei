@@ -134,7 +134,7 @@ export default function FinfluencersBlog() {
                     This physical budgeting method where you allocate cash into different envelopes for different spending categories is actually effective for visual learners and those who struggle with digital tracking.
                   </p>
                   <p className="text-sm text-green-700">
-                    <strong>Verdict:</strong> ✅ Legitimate budgeting technique
+                    <strong>Verdict:</strong> [GOOD] Legitimate budgeting technique
                   </p>
                 </div>
               </div>
@@ -149,7 +149,7 @@ export default function FinfluencersBlog() {
                     Being vocal about your financial goals and saying &quot;no&quot; to expensive outings. This creates accountability and can help you stick to your budget.
                   </p>
                   <p className="text-sm text-blue-700">
-                    <strong>Verdict:</strong> ✅ Psychologically helpful for accountability
+                    <strong>Verdict:</strong> [GOOD] Psychologically helpful for accountability
                   </p>
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function FinfluencersBlog() {
                     Anyone promising quick riches through &quot;secret&quot; investments or claiming you can get rich without effort is likely selling something or promoting a pyramid scheme.
                   </p>
                   <p className="text-sm text-red-700">
-                    <strong>Verdict:</strong> ❌ Run away. There are no shortcuts.
+                    <strong>Verdict:</strong> [BAD] Run away. There are no shortcuts.
                   </p>
                 </div>
               </div>

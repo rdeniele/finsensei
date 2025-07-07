@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { coinService } from '@/services/coinService';
 import { UserCoinBalance } from '@/types/coin';
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import ChatModal from './ChatModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
@@ -53,7 +54,7 @@ export default function CoachButton({ accounts, transactions }: CoachButtonProps
         title="Chat with FinSensei AI Coach"
       >
         <div className="flex items-center space-x-2">
-          <div className="text-2xl">🤖</div>
+          <ChatBubbleLeftRightIcon className="w-6 h-6 text-white" />
           <div className="text-left">
             <div className="font-semibold text-sm">AI Coach</div>
             <div className="text-xs opacity-90">

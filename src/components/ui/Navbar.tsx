@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import ThemeToggle from '@/components/ui/ThemeToggle';
 import {
   HomeIcon,
   WalletIcon,
@@ -14,13 +15,10 @@ import {
   ArrowRightOnRectangleIcon,
   Cog6ToothIcon,
   BanknotesIcon,
-  SunIcon,
-  MoonIcon,
   ShieldCheckIcon,
   UserCircleIcon,
   CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
-import { useTheme } from 'next-themes';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -28,7 +26,6 @@ export default function Navbar() {
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -87,16 +84,7 @@ export default function Navbar() {
                   <ShieldCheckIcon className="h-6 w-6" />
                 </Link>
               )}
-              <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300"
-              >
-                {theme === 'dark' ? (
-                  <SunIcon className="h-6 w-6" />
-                ) : (
-                  <MoonIcon className="h-6 w-6" />
-                )}
-              </button>
+              <ThemeToggle />
               <div className="relative">
                 <button
                   onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}

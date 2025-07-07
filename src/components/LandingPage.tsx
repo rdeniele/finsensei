@@ -1054,7 +1054,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-200 mt-12 pt-8 text-center text-gray-500">
-            <p>&copy; 2024 FinSensei. All rights reserved. Made with ❤️ for your financial future.</p>
+            <p>&copy; 2024 FinSensei. All rights reserved. Made with love for your financial future.</p>
           </div>
         </div>
       </footer>

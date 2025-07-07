@@ -8,7 +8,7 @@ import { saveChatMessage, getChatHistory, clearChatHistory } from '@/services/ch
 import { coinService } from '@/services/coinService';
 import BaseModal from '@/components/ui/BaseModal';
 import { TextInput } from '@/components/ui/FormInput';
-import { CurrencyDollarIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { CurrencyDollarIcon, ExclamationTriangleIcon, TrashIcon, ChatBubbleOvalLeftEllipsisIcon } from '@heroicons/react/24/outline';
 import { UserCoinBalance } from '@/types/coin';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
@@ -229,17 +229,19 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
         <div className="flex justify-end mb-4">
           <button
             onClick={handleClearHistory}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
             title="Clear chat history"
           >
-            🗑️
+            <TrashIcon className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto mb-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-              <div className="text-4xl mb-4">💬</div>
+              <div className="mb-4 flex justify-center">
+                <ChatBubbleOvalLeftEllipsisIcon className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+              </div>
               <p className="text-lg font-medium mb-2">Welcome to FinSensei AI Coach!</p>
               <p className="text-sm">
                 Ask me anything about your finances, budgeting, or financial goals.
@@ -285,7 +287,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, accounts, transa
             <div className="flex justify-start">
               <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg px-4 py-3 max-w-md">
                 <div className="flex items-start space-x-3">
-                  <div className="text-yellow-600 dark:text-yellow-400 text-xl">⚠️</div>
+                  <ExclamationTriangleIcon className="w-6 h-6 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                   <div>
                     <p className="text-yellow-800 dark:text-yellow-200 font-medium mb-1">
                       Out of Coins

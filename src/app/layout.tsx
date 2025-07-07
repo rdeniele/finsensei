@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
-import { ThemeProvider } from 'next-themes';
+import { ThemeProvider } from "@/lib/theme";
 import Script from 'next/script';
 import { Toaster } from 'react-hot-toast';
 
@@ -105,7 +105,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <AuthProvider>
             {children}
             <Toaster position="top-right" />

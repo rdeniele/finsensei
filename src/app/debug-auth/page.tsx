@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
+import { CheckCircleIcon, XCircleIcon, ClipboardDocumentListIcon } from '@heroicons/react/24/outline';
 
 export default function DebugAuthPage() {
   const [testResult, setTestResult] = useState<string>('');
@@ -16,18 +17,18 @@ export default function DebugAuthPage() {
       const { data, error } = await supabase.from('profiles').select('count').limit(1);
       
       if (error) {
-        setTestResult(prev => prev + `❌ Database connection failed: ${error.message}\n`);
+        setTestResult(prev => prev + `[ERROR] Database connection failed: ${error.message}\n`);
       } else {
-        setTestResult(prev => prev + `✅ Database connection successful\n`);
+        setTestResult(prev => prev + `[SUCCESS] Database connection successful\n`);
       }
 
       // Test auth configuration
       const { data: authData, error: authError } = await supabase.auth.getSession();
       
       if (authError) {
-        setTestResult(prev => prev + `❌ Auth configuration error: ${authError.message}\n`);
+        setTestResult(prev => prev + `[ERROR] Auth configuration error: ${authError.message}\n`);
       } else {
-        setTestResult(prev => prev + `✅ Auth configuration successful\n`);
+        setTestResult(prev => prev + `[SUCCESS] Auth configuration successful\n`);
       }
 
       setTestResult(prev => prev + '\n📋 Next Steps:\n');
@@ -38,7 +39,7 @@ export default function DebugAuthPage() {
       setTestResult(prev => prev + '5. Add http://localhost:3000/** to Redirect URLs\n');
 
     } catch (error: any) {
-      setTestResult(prev => prev + `❌ Unexpected error: ${error.message}\n`);
+      setTestResult(prev => prev + `[ERROR] Unexpected error: ${error.message}\n`);
     } finally {
       setLoading(false);
     }

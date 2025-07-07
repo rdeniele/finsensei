@@ -44,7 +44,7 @@ export default function DailyCoins() {
         setLastRefresh(new Date().toISOString());
         
         // Show success message
-        alert('Successfully claimed your daily 20 coins! 🎉');
+        alert('Successfully claimed your daily 20 coins!');
         
         // Refresh the page to update coin balance
         window.location.reload();

@@ -25,6 +25,15 @@ import {
   ScaleIcon,
   BanknotesIcon,
   UserCircleIcon,
+  CurrencyDollarIcon,
+  ChatBubbleLeftRightIcon,
+  PlusCircleIcon,
+  EyeIcon,
+  PlusIcon,
+  CreditCardIcon,
+  DocumentTextIcon,
+  CogIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import type { FinancialGoal } from '@/types/supabase';
 import type { Account, Transaction } from '@/lib/api';
@@ -211,7 +220,7 @@ export default function DashboardPage() {
               <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <Link href="/coins" className="block w-full sm:w-auto">
                   <div className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 w-full">
-                    <span className="text-lg">💰</span>
+                    <CurrencyDollarIcon className="w-5 h-5 text-white" />
                     <span className="font-medium text-sm">Buy Coins</span>
                   </div>
                 </Link>
@@ -220,7 +229,7 @@ export default function DashboardPage() {
                   className="block w-full sm:w-auto"
                 >
                   <div className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 cursor-pointer flex items-center justify-center space-x-2 w-full">
-                    <span className="text-lg">🤖</span>
+                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-white" />
                     <span className="font-medium text-sm">Chat with AI</span>
                   </div>
                 </button>
@@ -430,6 +439,46 @@ export default function DashboardPage() {
                     </button>
                   </div>
                 )}
+              </div>
+
+              {/* Quick Actions Section */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
+                    <PlusIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h2 className="text-xl font-semibold dark:text-white">Quick Actions</h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={() => router.push('/accounts')}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <CreditCardIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <span className="text-sm font-medium dark:text-white">Add Account</span>
+                  </button>
+                  <button
+                    onClick={() => router.push('/transactions')}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <DocumentTextIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <span className="text-sm font-medium dark:text-white">Add Transaction</span>
+                  </button>
+                  <button
+                    onClick={() => router.push('/goals')}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <FlagIcon className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <span className="text-sm font-medium dark:text-white">Create Goal</span>
+                  </button>
+                  <button
+                    onClick={() => setShowChatModal(true)}
+                    className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <span className="text-sm font-medium dark:text-white">Ask Coach</span>
+                  </button>
+                </div>
               </div>
 
               {/* Daily Coins Section */}
