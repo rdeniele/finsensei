@@ -34,7 +34,13 @@ export async function getAccounts(userId: string): Promise<Account[]> {
   }
 }
 
-export async function createAccount(userId: string, accountName: string, balance: number): Promise<Account> {
+export async function createAccount(
+  userId: string, 
+  accountName: string, 
+  balance: number, 
+  accountType: string = 'checking', 
+  currency: string = 'USD'
+): Promise<Account> {
   try {
     const { data, error } = await supabase
       .from('accounts')
@@ -42,7 +48,9 @@ export async function createAccount(userId: string, accountName: string, balance
         {
           user_id: userId,
           account_name: accountName,
-          balance: balance
+          balance: balance,
+          account_type: accountType,
+          currency: currency
         }
       ])
       .select()
